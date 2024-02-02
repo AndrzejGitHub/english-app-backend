@@ -12,18 +12,13 @@ import java.util.List;
 @Setter
 @Getter
 @Entity
-public class Vocabulary {
+public class PartOfSpeech {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "vocabulary_id")
+    @Column(name = "part_of_speech_id")
     private Integer id;
 
-    private String englishWord;
+    private String name;
 
-    private String imageURL;
-
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "vocabulary_range_id")
-    private VocabularyRange vocabularyRange;
-
-}
+  }

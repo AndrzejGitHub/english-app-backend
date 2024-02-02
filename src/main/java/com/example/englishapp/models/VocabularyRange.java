@@ -1,12 +1,7 @@
 package com.example.englishapp.models;
 
-
 import jakarta.persistence.*;
 import lombok.*;
-
-
-import java.util.List;
-
 @ToString
 @Builder
 @AllArgsConstructor
@@ -14,14 +9,12 @@ import java.util.List;
 @Setter
 @Getter
 @Entity
-    public class VocabularyArea {
+public class VocabularyRange {
         @Id
         @GeneratedValue(strategy = GenerationType.IDENTITY)
-        private Long id;
+        @Column(name = "vocabulary_range_id")
+        private Integer id;
 
-        private String name;
+        private Integer vocabulary_range;
     }
 
-// deleted
-//        @ManyToMany(mappedBy = "vocabularyAreas")
-//        private List<Vocabulary> vocabularies;
