@@ -29,15 +29,15 @@ public class VocabularySearchService {
         return translationRepository.findTranslationByVocabularyOrderByPartOfSpeech(vocabulary);
     }
 
-    public List<Vocabulary> searchVocabulariesByRangeId(Integer rangeId) {
-        return vocabularyRepository.findAllByVocabularyRangeId(rangeId);
-    }
+//    public List<Vocabulary> searchVocabulariesByRangeId(Integer rangeId) {
+//        return vocabularyRepository.findAllByVocabularyRangeId(rangeId);
+//    }
 
     public List<Translation> searchTranslationsByEnglishWord(String term) {
         return translationRepository.findTranslationByVocabularyEnglishWordContaining(term);
     }
 
-    public List<Translation> searchTranslationsByRangeId(Integer rangeId) {
-        return translationRepository.findTranslationsByVocabularyContainingVocabularyRange(rangeId);
-    }
+//    public List<Translation> searchTranslationsByRangeId(Integer rangeId) {
+//        return translationRepository.findTranslationsByVocabularyContainingVocabularyRange(rangeId);
+//    }
 }

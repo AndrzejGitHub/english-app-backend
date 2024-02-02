@@ -47,9 +47,6 @@ public class VocabularySearchRestController {
 
     @GetMapping("/findByRange")
     public ResponseEntity<List<Translation>> searchVocabulariesByRange(@RequestParam(name = "query") String query) {
-
-
-
         var vocabularies = vocabularyService.searchVocabularies(query);
         if (vocabularies.isEmpty()) {
             return ResponseEntity.notFound().build();
@@ -57,16 +54,16 @@ public class VocabularySearchRestController {
         var firstVocabulary = vocabularies.getFirst();
         List<Translation> combinedResults;
 
-        if (firstVocabulary.getVocabularyRange() == null) {
-            combinedResults = vocabularySearchService.searchVocabularyAndGiveResponseTranslations(query);
-        } else {
+//        if (firstVocabulary.getVocabularyRange() == null) {
+//            combinedResults = vocabularySearchService.searchVocabularyAndGiveResponseTranslations(query);
+//        } else {
             var translationsByWord = vocabularySearchService.searchTranslationsByEnglishWord(query);
-            var translationsByRangeId = vocabularySearchService.searchTranslationsByRangeId(firstVocabulary.getVocabularyRange().getId());
+//            var translationsByRangeId = vocabularySearchService.searchTranslationsByRangeId(firstVocabulary.getVocabularyRange().getId());
             combinedResults = new ArrayList<>(translationsByWord);
-            translationsByRangeId.stream()
-                    .filter(translation -> combinedResults.stream().noneMatch(t -> t.getId().equals(translation.getId())))
-                    .forEach(combinedResults::add);
-        }
+//            translationsByRangeId.stream()
+//                    .filter(translation -> combinedResults.stream().noneMatch(t -> t.getId().equals(translation.getId())))
+//                    .forEach(combinedResults::add);
+//        }
         return ResponseEntity.ok().body(combinedResults);
     }
 

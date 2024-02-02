@@ -22,8 +22,8 @@ public class Vocabulary {
 
     private String imageURL;
 
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "vocabulary_range_id")
-    private VocabularyRange vocabularyRange;
+//    @ManyToOne(cascade = CascadeType.ALL)
+//    @JoinColumn(name = "vocabulary_range_id")
+//    private VocabularyRange vocabularyRange;
 
 }

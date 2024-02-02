@@ -62,4 +62,11 @@ public class VocabularyService {
         } else
             throw new NotFoundException("English word was not found");
     }
+
+    public List<Vocabulary> findVocabulariesByVocabularyRange(Integer rangeId) {
+        System.out.println(rangeId);
+        var vocabularies =  vocabularyRepository.findVocabulariesByVocabularyRange(rangeId);
+        System.out.println(vocabularies);
+        return vocabularies;
+    }
 }

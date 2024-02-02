@@ -1,6 +1,7 @@
 package com.example.englishapp.repositories;
 
 import com.example.englishapp.models.Vocabulary;
+import com.example.englishapp.models.VocabularyRange;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -17,9 +18,16 @@ public interface VocabularyRepository extends JpaRepository<Vocabulary, Integer>
 
     List<Vocabulary> findByEnglishWordIgnoreCase(String term);
 
-    List<Vocabulary> findAllByVocabularyRangeId(Integer rangeId);
 
     @Query("SELECT v FROM Vocabulary v JOIN Translation t ON v.id = t.vocabulary.id WHERE t.id = :translationId")
     Optional<Vocabulary> findVocabularyByTranslationId(@Param("translationId") Integer translationId);
+
+//    @Query("SELECT v FROM Vocabulary v JOIN VocabularyRange vr ON vr.id = v.id WHERE vr.vocabulary_range = :vocabularyRange")
+//    List<Vocabulary> findVocabularyByVocabularyRangeId(@Param("vocabularyRange") Integer vocabularyRange);
+
+    @Query("SELECT v FROM Vocabulary v " +
+            "JOIN VocabularyRange vr ON v.id = vr.vocabulary.id " +
+            "WHERE vr.vocabulary_range = :vocabularyRangeId")
+    List<Vocabulary> findVocabulariesByVocabularyRange(@Param("vocabularyRangeId") Integer vocabularyRangeId);
 
 }

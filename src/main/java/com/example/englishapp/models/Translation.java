@@ -32,4 +32,5 @@ public class Translation {
     @JoinColumn(name = "translation_variant_id")
     @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})
     private TranslationVariant translationVariant;
+
 }

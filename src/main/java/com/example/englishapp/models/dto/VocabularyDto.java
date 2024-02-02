@@ -24,6 +24,6 @@ public class VocabularyDto {
 
     private String imageURL;
 
-    private VocabularyRange vocabularyRange;
+//    private VocabularyRange vocabularyRange;
 }
 

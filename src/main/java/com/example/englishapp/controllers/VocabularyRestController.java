@@ -24,10 +24,16 @@ public class VocabularyRestController {
                        vocabulary -> modelMapper.map(vocabulary, VocabularyDto.class)).toList());
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<VocabularyDto> getVocabulary(@PathVariable Integer id) {
+//    @GetMapping("/{id}")
+//    public ResponseEntity<VocabularyDto> getVocabulary(@PathVariable Integer id) {
+//        return ResponseEntity.status(HttpStatus.OK).body(
+//                modelMapper.map(vocabularyService.getVocabulary(id), VocabularyDto.class));
+//    }
+
+    @GetMapping("/{rangeId}")
+    public ResponseEntity<VocabularyDto> findVocabulariesByVocabularyRange(@PathVariable Integer rangeId) {
         return ResponseEntity.status(HttpStatus.OK).body(
-                modelMapper.map(vocabularyService.getVocabulary(id), VocabularyDto.class));
+                modelMapper.map(vocabularyService.findVocabulariesByVocabularyRange(rangeId), VocabularyDto.class));
     }
 
     @PostMapping()
