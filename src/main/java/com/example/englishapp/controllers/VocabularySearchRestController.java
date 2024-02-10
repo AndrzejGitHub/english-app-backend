@@ -1,7 +1,9 @@
 package com.example.englishapp.controllers;
 
-import com.example.englishapp.models.Translation;
+import com.example.englishapp.models.dto.TranslationDto;
+import com.example.englishapp.models.dto.TranslationWithVocabularyRangeDto;
 import com.example.englishapp.models.dto.VocabularyDto;
+import com.example.englishapp.repositories.VocabularyRangeRepository;
 import com.example.englishapp.services.VocabularySearchService;
 import com.example.englishapp.services.VocabularyService;
 import lombok.RequiredArgsConstructor;
@@ -12,8 +14,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import java.util.ArrayList;
-import java.util.List;
+
+import java.util.*;
+
 
 @RestController
 @RequiredArgsConstructor
@@ -22,6 +25,7 @@ public class VocabularySearchRestController {
 
     final VocabularyService vocabularyService;
     final VocabularySearchService vocabularySearchService;
+    final VocabularyRangeRepository vocabularyRangeRepository;
     final ModelMapper modelMapper;
 
     @GetMapping("/startingWith")
@@ -40,31 +44,19 @@ public class VocabularySearchRestController {
     }
 
     @GetMapping("/translation")
-    public ResponseEntity<List<Translation>> searchTranslationByVocabularyOrderByPartOfSpeech(@RequestParam(name = "query") String query) {
-        return ResponseEntity.status(HttpStatus.OK).body(
-                vocabularySearchService.searchTranslationsByVocabularyOrderByPartOfSpeech(query));
+    public ResponseEntity<List<TranslationDto>> searchTranslationByVocabularyOrderByPartOfSpeech(@RequestParam(name = "query") String query) {
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(vocabularySearchService.searchTranslationsByVocabularyOrderByPartOfSpeech(query).stream()
+                        .map(translation -> modelMapper.map(translation, TranslationDto.class)).toList());
     }
 
-    @GetMapping("/findByRange")
-    public ResponseEntity<List<Translation>> searchVocabulariesByRange(@RequestParam(name = "query") String query) {
-        var vocabularies = vocabularyService.searchVocabularies(query);
-        if (vocabularies.isEmpty()) {
-            return ResponseEntity.notFound().build();
-        }
-        var firstVocabulary = vocabularies.getFirst();
-        List<Translation> combinedResults;
+    @GetMapping("/findByRangeWithVocabularyRange")
+    public ResponseEntity<List<TranslationWithVocabularyRangeDto>> searchVocabulariesByRangeWithVocabularyRange(@RequestParam(name = "query") String query) {
+        var translationWithVocabularyRangeDtoList = vocabularySearchService.searchTranslationsWithVocabularyRangeByEnglishWord(query).stream()
+                .map(translationWithVocabularyRange -> modelMapper.map(translationWithVocabularyRange, TranslationWithVocabularyRangeDto.class)).toList();
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(translationWithVocabularyRangeDtoList);
 
-//        if (firstVocabulary.getVocabularyRange() == null) {
-//            combinedResults = vocabularySearchService.searchVocabularyAndGiveResponseTranslations(query);
-//        } else {
-            var translationsByWord = vocabularySearchService.searchTranslationsByEnglishWord(query);
-//            var translationsByRangeId = vocabularySearchService.searchTranslationsByRangeId(firstVocabulary.getVocabularyRange().getId());
-            combinedResults = new ArrayList<>(translationsByWord);
-//            translationsByRangeId.stream()
-//                    .filter(translation -> combinedResults.stream().noneMatch(t -> t.getId().equals(translation.getId())))
-//                    .forEach(combinedResults::add);
-//        }
-        return ResponseEntity.ok().body(combinedResults);
     }
 
 }

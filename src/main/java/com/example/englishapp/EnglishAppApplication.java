@@ -4,13 +4,11 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 
-
 @SpringBootApplication
-//@ComponentScan(basePackages = "com.example.englishapp")
 public class EnglishAppApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(EnglishAppApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(EnglishAppApplication.class, args);
+    }
 
 }

@@ -4,8 +4,10 @@ import com.example.englishapp.models.UserRole;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import lombok.*;
+
 import java.util.Set;
 
+@ToString
 @Builder
 @Getter
 @Setter

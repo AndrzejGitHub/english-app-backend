@@ -17,6 +17,9 @@ public interface TranslationRepository extends JpaRepository<Translation, Intege
 
     List<Translation> findTranslationByVocabularyEnglishWordContaining(String term);
 
+    @Query("SELECT t FROM Translation t WHERE t.vocabulary.id = :rangeId")
+    List<Translation> findTranslationsByVocabularyContainingVocabularyRange(@Param("rangeId") Integer rangeId);
+
 //    @Query("SELECT t FROM Translation t WHERE t.vocabulary.vocabularyRange.id = :rangeId")
 //    List<Translation> findTranslationsByVocabularyContainingVocabularyRange(@Param("rangeId") Integer rangeId);
 

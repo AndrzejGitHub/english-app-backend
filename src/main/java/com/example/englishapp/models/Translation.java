@@ -33,4 +33,5 @@ public class Translation {
     @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})
     private TranslationVariant translationVariant;
 
+
 }

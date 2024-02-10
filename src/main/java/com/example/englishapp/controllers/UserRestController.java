@@ -6,13 +6,18 @@ import com.example.englishapp.models.dto.IdDto;
 import com.example.englishapp.models.dto.UserDto;
 import com.example.englishapp.models.dto.UserDtoAdd;
 import com.example.englishapp.services.UserService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.core.MethodParameter;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
+import java.util.Optional;
 
 @AllArgsConstructor
 @RequestMapping("/api/user")
@@ -21,13 +26,14 @@ public class UserRestController {
 
     final UserService userService;
     final ModelMapper modelMapper;
+    final HttpServletRequest httpServletRequest;
 
     @GetMapping()
     public ResponseEntity<List<UserDto>> getUsers() {
         return ResponseEntity.status(HttpStatus.OK).body(
-                userService.getUsers().stream().map((user ->  modelMapper.map(user, UserDto.class))).toList());
-//                userService.getUsers().stream().map(userMapper::convertToDto).toList());
+                userService.getUsers().stream().map((user -> modelMapper.map(user, UserDto.class))).toList());
     }
+
     @GetMapping("/{id}")
     public ResponseEntity<UserDto> getUser(@PathVariable Integer id) {
         return ResponseEntity.status(HttpStatus.OK)
@@ -37,20 +43,17 @@ public class UserRestController {
 
     @PostMapping()
     public ResponseEntity<UserDtoAdd> addUser(@Valid @RequestBody UserDtoAdd userDtoAdd) {
-        System.out.println(userDtoAdd);
-        var user = userService.insertUser(modelMapper.map(userDtoAdd, User.class));
-        if (user.getId()==null) //check correctness of saving
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(null);
-        else
-            return ResponseEntity.status(HttpStatus.OK).body(
-                    modelMapper.map(user, UserDtoAdd.class));
+        return Optional.ofNullable(userService.insertUser(modelMapper.map(userDtoAdd, User.class)))
+                .map(user -> ResponseEntity.status(HttpStatus.OK).body(
+                        modelMapper.map(user, UserDtoAdd.class)))
+                .orElse(ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null));
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<UserDto> editUser(@Valid @RequestBody UserDto userDto, @PathVariable Integer id) {
-        var user = userService.updateUser(id, modelMapper.map(userDto, User.class));
         return ResponseEntity.status(HttpStatus.OK).body(
-                modelMapper.map(user, UserDto.class));
+                modelMapper.map(userService.updateUser(id,
+                        modelMapper.map(userDto, User.class)), UserDto.class));
     }
 
     @DeleteMapping("/{id}")

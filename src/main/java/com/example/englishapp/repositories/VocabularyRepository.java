@@ -22,12 +22,10 @@ public interface VocabularyRepository extends JpaRepository<Vocabulary, Integer>
     @Query("SELECT v FROM Vocabulary v JOIN Translation t ON v.id = t.vocabulary.id WHERE t.id = :translationId")
     Optional<Vocabulary> findVocabularyByTranslationId(@Param("translationId") Integer translationId);
 
-//    @Query("SELECT v FROM Vocabulary v JOIN VocabularyRange vr ON vr.id = v.id WHERE vr.vocabulary_range = :vocabularyRange")
-//    List<Vocabulary> findVocabularyByVocabularyRangeId(@Param("vocabularyRange") Integer vocabularyRange);
-
     @Query("SELECT v FROM Vocabulary v " +
             "JOIN VocabularyRange vr ON v.id = vr.vocabulary.id " +
             "WHERE vr.vocabulary_range = :vocabularyRangeId")
     List<Vocabulary> findVocabulariesByVocabularyRange(@Param("vocabularyRangeId") Integer vocabularyRangeId);
+
 
 }

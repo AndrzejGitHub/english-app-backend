@@ -1,20 +1,23 @@
 package com.example.englishapp.controllers;
 
-import com.example.englishapp.models.PartOfSpeech;
+import com.example.englishapp.exeptions.NotFoundException;
 import com.example.englishapp.models.Translation;
-import com.example.englishapp.models.VocabularyRange;
-import com.example.englishapp.repositories.PartOfSpeechRepository;
+import com.example.englishapp.models.TranslationWithVocabularyRange;
+import com.example.englishapp.models.dto.PartOfSpeechDto;
+import com.example.englishapp.models.dto.TranslationDto;
+import com.example.englishapp.models.dto.TranslationWithVocabularyRangeDto;
 import com.example.englishapp.services.PartOfSpeechService;
 import com.example.englishapp.services.TranslationService;
 import com.example.englishapp.services.VocabularyService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequiredArgsConstructor
@@ -23,43 +26,89 @@ public class TranslationRestController {
 
     final TranslationService translationService;
     final VocabularyService vocabularyService;
-    final ModelMapper modelMapper;
     final PartOfSpeechService partOfSpeechService;
+    final ModelMapper modelMapper;
 
     @GetMapping()
-    public ResponseEntity<List<Translation>> getTranslations() {
-        return ResponseEntity.status(HttpStatus.OK).body(translationService.getTranslations());
+    public ResponseEntity<List<TranslationDto>> getTranslations() {
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(translationService.getTranslations().stream()
+                        .map((translation) -> modelMapper.map(translation, TranslationDto.class)).toList());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<List<Translation>> getTranslation(@PathVariable Integer id) {
-        return ResponseEntity.status(HttpStatus.OK).body(translationService.getTranslation(id));
+    public ResponseEntity<TranslationDto> getTranslationById(@PathVariable Integer id) {
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(modelMapper.map(translationService.getTranslation(id), TranslationDto.class));
+    }
+
+    @GetMapping("/vocabulary/{id}")
+    public ResponseEntity<List<TranslationDto>> getTranslationsByVocabularyId(@PathVariable Integer id) {
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(translationService.getTranslationByVocabularyId(id).stream()
+                        .map((translation) -> modelMapper.map(translation, TranslationDto.class)).toList());
+    }
+
+    @GetMapping("/range")
+    public ResponseEntity<List<TranslationWithVocabularyRangeDto>> getTranslationsWithVocabularyRange() {
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(translationService.getTranslationsWithVocabularyRange().stream()
+                        .map((translationWithVocabularyRange) -> modelMapper.map(translationWithVocabularyRange, TranslationWithVocabularyRangeDto.class)).toList());
+    }
+
+    @GetMapping("/range/{id}")
+    public ResponseEntity<List<TranslationWithVocabularyRangeDto>> getTranslationsByVocabularyRangeIdWithVocabularyRange(@PathVariable Integer id) {
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(translationService.getTranslationsByVocabularyRangeIdWithVocabularyRange(id).stream()
+                        .map((translationWithVocabularyRange) -> modelMapper.map(translationWithVocabularyRange, TranslationWithVocabularyRangeDto.class)).toList());
     }
 
     @PostMapping()
-    public ResponseEntity<Translation> addTranslation(@RequestBody Translation translation) {
-        Integer partOfSpeechId = translation.getPartOfSpeech().getId();
-        PartOfSpeech managedPartOfSpeech = partOfSpeechService.findById(partOfSpeechId)
-                .orElseThrow(() -> new RuntimeException("PartOfSpeech not found"));
-        translation.setPartOfSpeech(managedPartOfSpeech);
-//        VocabularyRange managedVocabularyRange = vocabularyService.findById(partOfSpeechId)
-//                .orElseThrow(() -> new RuntimeException("PartOfSpeech not found"));
-        var translationSaved = translationService.insertTranslation(translation);
-        if (translationSaved.getId() == null) //error save
-            return ResponseEntity.status(HttpStatus.CONFLICT).build();
-        else
-            return ResponseEntity.status(HttpStatus.OK).body(translationSaved);
+    public ResponseEntity<TranslationDto> addTranslation(@Valid @RequestBody TranslationDto translationDto) {
+        Integer partOfSpeechId = translationDto.getPartOfSpeech().getId();
+        partOfSpeechService.findById(partOfSpeechId)
+                .ifPresentOrElse((partOfSpeech) -> {
+                            translationDto.setPartOfSpeech(
+                                    modelMapper.map(partOfSpeech, PartOfSpeechDto.class));
+                        },
+                        () -> {
+                            throw new NotFoundException("PartOfSpeech not found");
+                        });
+        return Optional.ofNullable(translationService.insertTranslation(
+                        modelMapper.map(translationDto, Translation.class)))
+                .map(translationSaved ->
+                        ResponseEntity.status(HttpStatus.OK)
+                                .body(modelMapper.map(translationSaved, TranslationDto.class)))
+                .orElse(ResponseEntity.status(HttpStatus.BAD_REQUEST).build());
     }
 
     @PutMapping("{id}")
-    public ResponseEntity<Integer> editTranslation(@RequestBody Translation translation, @PathVariable Integer id) {
-        translationService.updateTranslation(translation, id);
-        return ResponseEntity.status(HttpStatus.OK).build();
+    public ResponseEntity<Integer> editTranslation(@RequestBody TranslationDto translationDto, @PathVariable Integer id) {
+        translationService.updateTranslation(modelMapper.map(translationDto, Translation.class), id);
+        return ResponseEntity.status(HttpStatus.OK).body(id);
+    }
+
+    @PostMapping("/range")
+    public ResponseEntity<TranslationWithVocabularyRangeDto> addTranslationWithVocabularyRange(@Valid @RequestBody TranslationWithVocabularyRangeDto translationWithVocabularyRangeDto) {
+        return Optional.ofNullable(translationService.insertTranslationWithVocabularyRange(
+                        modelMapper.map(translationWithVocabularyRangeDto, TranslationWithVocabularyRange.class)))
+                .map(translationSaved ->
+                        ResponseEntity.status(HttpStatus.OK)
+                                .body(modelMapper.map(translationSaved, TranslationWithVocabularyRangeDto.class)))
+                .orElse(ResponseEntity.status(HttpStatus.BAD_REQUEST).build());
+    }
+
+    @PutMapping("range/{id}")
+    public ResponseEntity<Integer> editTranslationWithVocabularyRange(@RequestBody TranslationWithVocabularyRangeDto translationWithVocabularyRangeDto,
+                                                                      @PathVariable Integer id) {
+        translationService.updateTranslation(
+                modelMapper.map(translationWithVocabularyRangeDto.getTranslation(), Translation.class), id);
+        return ResponseEntity.status(HttpStatus.OK).body(id);
     }
 
     @DeleteMapping("{id}")
-    public ResponseEntity<Integer> deleteTranslation(@PathVariable Integer id) {
-        translationService.removeTranslationAndVocabularyAndTranslationVariant(id);
+    public ResponseEntity<Integer> deleteTranslationWithVocabularyRange(@PathVariable Integer id) {
+        translationService.removeTranslationWithVocabularyAndTranslationVariantAndVocabularyRange(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).body(id);
     }
 }

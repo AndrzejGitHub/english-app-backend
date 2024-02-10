@@ -1,13 +1,13 @@
 package com.example.englishapp.models.dto;
 
 import com.example.englishapp.models.UserRole;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import jakarta.persistence.Column;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.*;
+
 import java.util.Set;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
+
 @ToString
 @Builder
 @Getter
@@ -18,25 +18,22 @@ public class UserDtoAdd {
 
     private Integer id;
 
-    @NotBlank(message = "Name is required")
-    @Size(min = 1, max = 255, message = "Firstname of user have to contain 1 - 255 chars")
+    @Size(min = 1, max = 255, message = "Name must be between 1 and 255 characters long")
     private String firstName;
 
-    @NotBlank(message = "Surname is required")
-    @Size(min = 1, max = 255, message = "Surname of user have to contain 1 - 255 chars")
+    @Size(min = 1, max = 255, message = "Surname must be between 1 and 255 characters long")
     private String lastName;
 
-//    @Column
-//    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-//    @Pattern(regexp = "^(?=.*[A-Za-z])(?=.*\\d)(?=.*[@$!%*#?&])[A-Za-z\\d@$!%*#?&]{8,}$", message = "Enter valid password")
-    private String password;
-
-//    @NotBlank(message = "Confirm Password is mandatory")
-//    private String confirmPassword;
-
-    @NotBlank(message = "Email is required")
-//    @Pattern(regexp = "^[a-zA-Z0-9+_.-]+@[a-zA-Z0-9.-]+\\.[a-zA-z]{2,3}$\n", message = "Enter valid email")
+    @Pattern(regexp = "^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+$",
+            message = "Please enter a valid email address.")
     private String email;
 
+    @Pattern(regexp = "^.{8,}$", message = "Password must contain at least 8 characters.")
+    @Pattern(regexp = ".*[A-Za-z].*", message = "Password must contain at least one letter (uppercase or lowercase).")
+    @Pattern(regexp = ".*\\d.*", message = "Password must contain at least one digit.")
+    @Pattern(regexp = ".*[@$!%*#?&].*", message = "Password must contain at least one special character among @, $, !, %, *, #, ?, &.")
+    private String password;
+
+    @NotEmpty(message = "Role is required")
     private Set<UserRole> roles;
 }
