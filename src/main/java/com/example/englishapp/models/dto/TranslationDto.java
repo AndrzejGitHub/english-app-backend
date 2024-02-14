@@ -1,8 +1,6 @@
 package com.example.englishapp.models.dto;
 
-import com.example.englishapp.models.PartOfSpeech;
-import com.example.englishapp.models.TranslationVariant;
-import com.example.englishapp.models.Vocabulary;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 @ToString
@@ -14,10 +12,13 @@ import lombok.*;
 public class TranslationDto {
     private Integer id;
 
+    @NotNull(message = "Part of speech is required")
     private PartOfSpeechDto partOfSpeech;
 
+    @NotNull(message = "English word is required")
     private VocabularyDto vocabulary;
 
+    @NotNull(message = "Polish translation is required")
     private TranslationVariantDto translationVariant;
 
 }

@@ -40,17 +40,20 @@ class UserServiceImplTest {
 
     @Test
     void getUser_UserExists() {
-        //given
+        // given
         Integer id = 1;
         User user = User.builder().build();
         Optional<User> optionalUser = Optional.of(user);
-        //when
+
+        // when
         Mockito.when(userRepository.findById(anyInt())).thenReturn(optionalUser);
-        User response = userService.getUser(id);
-        //then
-        assertEquals(user, response);
+        Optional<User> response = userService.getUser(id);
+
+        // then
+        assertEquals(optionalUser, response);
         Mockito.verify(userRepository).findById(id);
     }
+
 
 
     @Test

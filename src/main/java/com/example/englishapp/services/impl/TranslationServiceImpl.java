@@ -6,7 +6,6 @@ import com.example.englishapp.exeptions.NotFoundException;
 import com.example.englishapp.models.PartOfSpeech;
 import com.example.englishapp.models.Translation;
 import com.example.englishapp.models.TranslationWithVocabularyRange;
-import com.example.englishapp.models.VocabularyRange;
 import com.example.englishapp.repositories.*;
 import com.example.englishapp.services.PartOfSpeechService;
 import com.example.englishapp.services.TranslationService;
@@ -15,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PathVariable;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -46,7 +46,7 @@ class TranslationServiceImpl implements TranslationService {
     }
 
     @Override
-    public List<Translation> getTranslationByVocabularyId(Integer id) {
+    public List<Translation> getTranslationsByVocabularyId(Integer id) {
         var translation = translationRepository.findTranslationsByVocabularyId(id);
         if (!translation.isEmpty())
             return translation;
@@ -89,6 +89,12 @@ class TranslationServiceImpl implements TranslationService {
 
     @Override
     public Translation insertTranslation(Translation translation) {
+        Integer partOfSpeechId = translation.getPartOfSpeech().getId();
+        partOfSpeechService.findById(partOfSpeechId)
+                .ifPresentOrElse(translation::setPartOfSpeech,
+                        () -> {
+                            throw new NotFoundException("PartOfSpeech not found");
+                        });
         if (Objects.isNull(translation.getId()))
             return translationRepository.save(translation);
         else throw new ConflictException("Conflict. Translation exist.");
@@ -96,38 +102,13 @@ class TranslationServiceImpl implements TranslationService {
 
     @Override
     @Transactional
-    public TranslationWithVocabularyRange insertTranslationWithVocabularyRange(TranslationWithVocabularyRange translationWithVocabularyRange) {
-        Objects.requireNonNull(translationWithVocabularyRange, "TranslationWithVocabularyRangeDto not found");
-        Integer partOfSpeechId = Optional.ofNullable(translationWithVocabularyRange.getTranslation())
-                .map(Translation::getPartOfSpeech)
-                .map(PartOfSpeech::getId)
-                .orElseThrow(() -> new BadRequestException("Part of Speech is required"));
-        PartOfSpeech partOfSpeech = partOfSpeechService.findById(partOfSpeechId)
-                .orElseThrow(() -> new NotFoundException("PartOfSpeech not found"));
-        translationWithVocabularyRange.getTranslation().setPartOfSpeech(partOfSpeech);
-        if (translationWithVocabularyRange.getTranslation().getPartOfSpeech() == null) {
-            throw new BadRequestException("Part of speech is required");
-        }
-        if (Objects.isNull(translationWithVocabularyRange.getTranslation().getId())
-                && Objects.nonNull(translationWithVocabularyRange.getVocabularyRange())) {
-            Translation savedTranslation = translationRepository.save(translationWithVocabularyRange.getTranslation());
-            translationWithVocabularyRange.vocabularyRange.setVocabulary(savedTranslation.getVocabulary());
-            VocabularyRange savedVocabularyRange = vocabularyRangeRepository.save(translationWithVocabularyRange.getVocabularyRange());
-            return new TranslationWithVocabularyRange(savedTranslation, savedVocabularyRange);
-        } else {
-            throw new ConflictException("Conflict. TranslationWithVocabularyRange exist.");
-        }
-    }
-
-    @Override
-    @Transactional
-    public void updateTranslation(Translation translation, Integer id) {
+    public Translation updateTranslation(Translation translation, Integer id) {
         if ((Objects.nonNull(translation.getId()))
                 && (translation.getId().equals(id))
                 && (translationRepository.existsById(id))) {
             translation.setId(id);
             translation.setPartOfSpeech(partOfSpeechRepository.getReferenceById(translation.getPartOfSpeech().getId()));
-            translationRepository.save(translation);
+            return translationRepository.save(translation);
         } else throw new ConflictException("Conflict. Translation can't be updated.");
     }
 
@@ -139,6 +120,65 @@ class TranslationServiceImpl implements TranslationService {
             translationRepository.deleteById(id);
         } else
             throw new NotFoundException("English word was not found");
+    }
+
+    @Override
+    @Transactional
+    public TranslationWithVocabularyRange insertTranslationWithVocabularyRange(TranslationWithVocabularyRange translationWithVocabularyRange) {
+        validateTranslationWithVocabularyRangeDto(translationWithVocabularyRange);
+        return Optional.of(translationWithVocabularyRange)
+                .filter(t -> t.getVocabularyRange() == null || t.getVocabularyRange().getVocabulary_range() == null)
+                .map(t -> new TranslationWithVocabularyRange(
+                        insertTranslation(t.getTranslation()), null))
+                .orElseGet(() -> translationWithVocabularyRangeSaved(translationWithVocabularyRange));
+    }
+
+    @Override
+    @Transactional
+    public TranslationWithVocabularyRange updateTranslationWithVocabularyRange(TranslationWithVocabularyRange translationWithVocabularyRange, Integer id) {
+        validateTranslationWithVocabularyRangeDto(translationWithVocabularyRange);
+        translationWithVocabularyRange.getTranslation().setId(id);
+        return Optional.of(translationWithVocabularyRange)
+                .filter(t -> t.getVocabularyRange() == null || t.getVocabularyRange().getVocabulary_range() == null)
+                .map(t -> new TranslationWithVocabularyRange(
+                        updateTranslation(t.getTranslation(), t.getTranslation().getId()), null))
+                .orElseGet(() -> translationWithVocabularyRangeSaved(translationWithVocabularyRange));
+    }
+
+    public void validateTranslationWithVocabularyRangeDto(TranslationWithVocabularyRange translationWithVocabularyRange) {
+        List<String> errorMessages = new ArrayList<>();
+        if (translationWithVocabularyRange.getTranslation().getPartOfSpeech() == null
+                || translationWithVocabularyRange.getTranslation().getPartOfSpeech().getId() == null) {
+            errorMessages.add("Part of speech is required");
+        }
+        if (translationWithVocabularyRange.getTranslation().getVocabulary().getEnglishWord() == null
+                || translationWithVocabularyRange.getTranslation().getVocabulary().getEnglishWord().isEmpty()) {
+            errorMessages.add("English word is required");
+        }
+
+        if (translationWithVocabularyRange.getTranslation().getTranslationVariant().getPolishMeaning() == null
+                || translationWithVocabularyRange.getTranslation().getTranslationVariant().getPolishMeaning().isEmpty()) {
+            errorMessages.add("Polish translation is required");
+        }
+        if (!errorMessages.isEmpty()) {
+            String errorMessage = String.join("; ", errorMessages);
+            throw new BadRequestException(errorMessage);
+        }
+    }
+
+    TranslationWithVocabularyRange translationWithVocabularyRangeSaved(TranslationWithVocabularyRange translationWithVocabularyRange) {
+        Integer partOfSpeechId = translationWithVocabularyRange.getTranslation().getPartOfSpeech().getId();
+        PartOfSpeech partOfSpeech = partOfSpeechService.findById(partOfSpeechId)
+                .orElseThrow(() -> new NotFoundException("PartOfSpeech not found"));
+        translationWithVocabularyRange.getTranslation().setPartOfSpeech(partOfSpeech);
+        Translation savedTranslation = translationRepository.save(translationWithVocabularyRange.getTranslation());
+        return Optional.ofNullable(translationWithVocabularyRange.getVocabularyRange())
+                .map(vocabularyRange -> {
+                    translationWithVocabularyRange.vocabularyRange.setVocabulary(savedTranslation.getVocabulary());
+                    return new TranslationWithVocabularyRange(savedTranslation,
+                            vocabularyRangeRepository.save(translationWithVocabularyRange.getVocabularyRange()));
+                })
+                .orElse(new TranslationWithVocabularyRange(savedTranslation, null));
     }
 
     @Override

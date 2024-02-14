@@ -2,7 +2,6 @@ package com.example.englishapp.controllers;
 
 import com.deepl.api.TextResult;
 import com.deepl.api.Translator;
-import com.example.englishapp.models.dto.PartOfSpeechDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -11,7 +10,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor

@@ -31,7 +31,7 @@ public class CustomResponseEntityExceptionHandler {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ResponseBody
-    public ResponseEntity<ErrorDto> handleMethodArgumentNotValid(MethodArgumentNotValidException methodArgumentNotValidException) {
+    public ResponseEntity<ErrorDto> handleMethodArgumentNotValidException(MethodArgumentNotValidException methodArgumentNotValidException) {
         var dtoClass = Objects.requireNonNull(methodArgumentNotValidException.getParameter().getMethod()).getParameters()[0].getType();
         List<String> errors = methodArgumentNotValidException.getBindingResult()
                 .getFieldErrors()
@@ -58,7 +58,7 @@ public class CustomResponseEntityExceptionHandler {
     }
 
     @ExceptionHandler(ConflictException.class)
-    public ResponseEntity<ErrorDto> handleConflict(ConflictException conflictException) {
+    public ResponseEntity<ErrorDto> handleConflictException(ConflictException conflictException) {
         var errors = conflictException.getMessage();
         return ResponseEntity.status(HttpStatus.CONFLICT).body(
                 ErrorDto.builder()
@@ -68,7 +68,7 @@ public class CustomResponseEntityExceptionHandler {
     }
 
     @ExceptionHandler(NotFoundException.class)
-    public ResponseEntity<ErrorDto> handleConflict(NotFoundException notFoundException) {
+    public ResponseEntity<ErrorDto> handleNotFoundException(NotFoundException notFoundException) {
         var errors = notFoundException.getMessage();
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
                 ErrorDto.builder()
@@ -78,7 +78,7 @@ public class CustomResponseEntityExceptionHandler {
     }
 
     @ExceptionHandler(NoSuchElementException.class)
-    public ResponseEntity<ErrorDto> handleConflict(NoSuchElementException noSuchElementException) {
+    public ResponseEntity<ErrorDto> handleNoSuchElementException(NoSuchElementException noSuchElementException) {
         var errors = noSuchElementException.getMessage();
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
                 ErrorDto.builder()
@@ -88,7 +88,7 @@ public class CustomResponseEntityExceptionHandler {
     }
 
     @ExceptionHandler(BadRequestException.class)
-    public final ResponseEntity<ErrorDto> handleAllExceptions(BadRequestException exception) {
+    public final ResponseEntity<ErrorDto> handleBadRequestException(BadRequestException exception) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
                 ErrorDto.builder()
                         .messages(List.of(exception.getMessage()))

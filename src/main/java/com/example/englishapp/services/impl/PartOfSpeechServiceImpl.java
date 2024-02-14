@@ -1,5 +1,6 @@
 package com.example.englishapp.services.impl;
 
+import com.example.englishapp.exeptions.NotFoundException;
 import com.example.englishapp.models.PartOfSpeech;
 import com.example.englishapp.repositories.PartOfSpeechRepository;
 import com.example.englishapp.services.PartOfSpeechService;
@@ -21,6 +22,7 @@ class PartOfSpeechServiceImpl implements PartOfSpeechService {
 
     @Override
     public Optional<PartOfSpeech> findById(Integer id) {
-        return partOfSpeechRepository.findById(id);
+        return Optional.ofNullable(partOfSpeechRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("User was not found")));
     }
 }

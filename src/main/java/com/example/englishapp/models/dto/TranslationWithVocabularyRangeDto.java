@@ -9,5 +9,6 @@ import lombok.*;
 public class TranslationWithVocabularyRangeDto {
 
     public TranslationDto translation;
+
     public VocabularyRangeDto vocabularyRange;
 }

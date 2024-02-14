@@ -1,7 +1,6 @@
 package com.example.englishapp.repositories;
 
 import com.example.englishapp.models.Vocabulary;
-import com.example.englishapp.models.VocabularyRange;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

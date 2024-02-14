@@ -6,10 +6,10 @@ import com.example.englishapp.models.User;
 import com.example.englishapp.repositories.UserRepository;
 import com.example.englishapp.services.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -17,6 +17,7 @@ import java.util.Optional;
 class UserServiceImpl implements UserService {
 
     final UserRepository userRepository;
+    final PasswordEncoder passwordEncoder;
 
     @Override
     public List<User> getUsers() {
@@ -24,30 +25,42 @@ class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User getUser(Integer id) {
-        Optional<User> optionalUser = userRepository.findById(id);
-        return optionalUser.orElseThrow(() -> new NotFoundException("User was not found"));
+    public Optional<User> getUser(Integer id) {
+        return Optional.ofNullable(userRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("User was not found")));
     }
 
     @Override
     public User insertUser(User user) {
-        if (Objects.isNull(user.getId()))
-            return userRepository.save(user);
-        else throw new ConflictException("Conflict. User exist.");
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        return (User) Optional.ofNullable(user.getId())
+                .map(userId -> { throw new ConflictException("Conflict. User exist."); })
+                .orElse(userRepository.save(user));
     }
 
     @Override
     public User updateUser(Integer id, User user) {
-        if (userRepository.findById(id).isPresent()) {
-            user.setId(id);
-            return userRepository.save(user);
-        } else throw new NotFoundException("User was not found");
+        return userRepository.findById(id)
+                .map(userFromDb -> {
+                    user.setId(id);
+                    user.setPassword(userFromDb.getPassword());
+                    return userRepository.save(user);
+                })
+                .orElseThrow(() -> new NotFoundException("User was not found"));
     }
 
     @Override
     public void deleteUser(Integer id) {
-        if (userRepository.findById(id).isPresent())
-            userRepository.deleteById(id);
-        else throw new NotFoundException("User was not found");
+        userRepository.findById(id)
+                .ifPresentOrElse(
+                        user -> userRepository.deleteById(id),
+                        () -> {
+                            throw new NotFoundException("User was not found");
+                        }
+                );
+    }
+
+    public Optional<User> findByEmail(String email) {
+        return userRepository.findByEmail(email);
     }
 }

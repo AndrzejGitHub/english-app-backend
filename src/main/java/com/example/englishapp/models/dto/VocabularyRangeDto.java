@@ -1,6 +1,5 @@
 package com.example.englishapp.models.dto;
 
-import com.example.englishapp.models.Vocabulary;
 import lombok.*;
 
 @ToString

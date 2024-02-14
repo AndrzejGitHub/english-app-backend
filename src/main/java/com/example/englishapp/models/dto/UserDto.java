@@ -27,5 +27,6 @@ public class UserDto {
     @Pattern(regexp = "^[\\w-]+@([\\w-]+\\.)+[\\w-]{2,4}$", message = "Enter valid email")
     private String email;
 
+
     private Set<UserRole> roles;
 }

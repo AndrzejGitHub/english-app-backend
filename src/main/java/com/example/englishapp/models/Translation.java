@@ -3,7 +3,6 @@ package com.example.englishapp.models;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.List;
 
 @Builder
 @AllArgsConstructor

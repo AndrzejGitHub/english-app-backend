@@ -1,8 +1,6 @@
 package com.example.englishapp.controllers;
 
-import com.example.englishapp.models.TranslationWithVocabularyRange;
 import com.example.englishapp.models.Vocabulary;
-import com.example.englishapp.models.dto.TranslationWithVocabularyRangeDto;
 import com.example.englishapp.models.dto.VocabularyDto;
 import com.example.englishapp.services.VocabularyService;
 import jakarta.validation.Valid;

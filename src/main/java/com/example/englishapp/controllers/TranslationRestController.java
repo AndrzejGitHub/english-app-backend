@@ -45,7 +45,7 @@ public class TranslationRestController {
     @GetMapping("/vocabulary/{id}")
     public ResponseEntity<List<TranslationDto>> getTranslationsByVocabularyId(@PathVariable Integer id) {
         return ResponseEntity.status(HttpStatus.OK)
-                .body(translationService.getTranslationByVocabularyId(id).stream()
+                .body(translationService.getTranslationsByVocabularyId(id).stream()
                         .map((translation) -> modelMapper.map(translation, TranslationDto.class)).toList());
     }
 
@@ -65,15 +65,6 @@ public class TranslationRestController {
 
     @PostMapping()
     public ResponseEntity<TranslationDto> addTranslation(@Valid @RequestBody TranslationDto translationDto) {
-        Integer partOfSpeechId = translationDto.getPartOfSpeech().getId();
-        partOfSpeechService.findById(partOfSpeechId)
-                .ifPresentOrElse((partOfSpeech) -> {
-                            translationDto.setPartOfSpeech(
-                                    modelMapper.map(partOfSpeech, PartOfSpeechDto.class));
-                        },
-                        () -> {
-                            throw new NotFoundException("PartOfSpeech not found");
-                        });
         return Optional.ofNullable(translationService.insertTranslation(
                         modelMapper.map(translationDto, Translation.class)))
                 .map(translationSaved ->
@@ -92,18 +83,19 @@ public class TranslationRestController {
     public ResponseEntity<TranslationWithVocabularyRangeDto> addTranslationWithVocabularyRange(@Valid @RequestBody TranslationWithVocabularyRangeDto translationWithVocabularyRangeDto) {
         return Optional.ofNullable(translationService.insertTranslationWithVocabularyRange(
                         modelMapper.map(translationWithVocabularyRangeDto, TranslationWithVocabularyRange.class)))
-                .map(translationSaved ->
-                        ResponseEntity.status(HttpStatus.OK)
-                                .body(modelMapper.map(translationSaved, TranslationWithVocabularyRangeDto.class)))
+                .map(translationSaved -> ResponseEntity.status(HttpStatus.OK)
+                        .body(modelMapper.map(translationSaved, TranslationWithVocabularyRangeDto.class)))
                 .orElse(ResponseEntity.status(HttpStatus.BAD_REQUEST).build());
     }
 
     @PutMapping("range/{id}")
-    public ResponseEntity<Integer> editTranslationWithVocabularyRange(@RequestBody TranslationWithVocabularyRangeDto translationWithVocabularyRangeDto,
+    public ResponseEntity<Integer> editTranslationWithVocabularyRange(@Valid @RequestBody TranslationWithVocabularyRangeDto translationWithVocabularyRangeDto,
                                                                       @PathVariable Integer id) {
-        translationService.updateTranslation(
-                modelMapper.map(translationWithVocabularyRangeDto.getTranslation(), Translation.class), id);
-        return ResponseEntity.status(HttpStatus.OK).body(id);
+        return Optional.ofNullable(translationService.updateTranslationWithVocabularyRange(
+                        modelMapper.map(translationWithVocabularyRangeDto, TranslationWithVocabularyRange.class), id))
+                .map(translationUpdated -> ResponseEntity.status(HttpStatus.OK).body(id))
+                .orElse(ResponseEntity.status(HttpStatus.BAD_REQUEST).build());
+
     }
 
     @DeleteMapping("{id}")

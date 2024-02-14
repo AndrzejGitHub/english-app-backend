@@ -12,7 +12,7 @@ public interface TranslationService {
 
     Translation getTranslation(Integer id);
 
-    List<Translation> getTranslationByVocabularyId(Integer id);
+    List<Translation> getTranslationsByVocabularyId(Integer id);
 
     List<TranslationWithVocabularyRange> getTranslationsByVocabularyRangeIdWithVocabularyRange(Integer id);
 
@@ -21,9 +21,9 @@ public interface TranslationService {
     Translation insertTranslation(Translation translation);
 
     TranslationWithVocabularyRange insertTranslationWithVocabularyRange(TranslationWithVocabularyRange translationWithVocabularyRange);
-
+    TranslationWithVocabularyRange updateTranslationWithVocabularyRange(TranslationWithVocabularyRange translationWithVocabularyRange, Integer id);
     @Transactional
-    void updateTranslation(Translation translation, Integer id);
+    Translation updateTranslation(Translation translation, Integer id);
 
     @Transactional
     void removeTranslation(@PathVariable Integer id);
@@ -37,4 +37,6 @@ public interface TranslationService {
     void removeTranslationsByPartOfSpeechId(Integer partOfSpeechId);
 
     void removeTranslationWithVocabularyAndTranslationVariantAndVocabularyRange(Integer id);
+
+
 }

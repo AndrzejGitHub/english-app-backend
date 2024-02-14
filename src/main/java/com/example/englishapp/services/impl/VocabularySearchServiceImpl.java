@@ -3,6 +3,7 @@ package com.example.englishapp.services.impl;
 import com.example.englishapp.exeptions.NotFoundException;
 import com.example.englishapp.models.Translation;
 import com.example.englishapp.models.TranslationWithVocabularyRange;
+import com.example.englishapp.models.Vocabulary;
 import com.example.englishapp.models.VocabularyRange;
 import com.example.englishapp.repositories.PartOfSpeechRepository;
 import com.example.englishapp.repositories.TranslationRepository;
@@ -23,7 +24,6 @@ class VocabularySearchServiceImpl implements VocabularySearchService {
 
     final VocabularyRepository vocabularyRepository;
     final TranslationRepository translationRepository;
-    final PartOfSpeechRepository partOfSpeechRepository;
     final VocabularyRangeRepository vocabularyRangeRepository;
     final VocabularyService vocabularyService;
 
@@ -63,13 +63,13 @@ class VocabularySearchServiceImpl implements VocabularySearchService {
         var firstVocabulary = vocabularies.getFirst();
         var vocabularyRange = vocabularyRangeRepository.findVocabularyRangeByVocabularyId(firstVocabulary.getId());
         if (vocabularyRange.isEmpty())
-            return findTranslationByVocabularyEnglishWordContaining(query);
+            return findTranslationsByVocabularyEnglishWordContaining(query);
         Set<TranslationWithVocabularyRange> combinedResultsSet = vocabularyRange.map(vRange -> {
-            var initialWordTranslations = findTranslationByVocabularyEnglishWordContaining(firstVocabulary.getEnglishWord());
+            var initialWordTranslations = findTranslationsByVocabularyEnglishWordContaining(firstVocabulary.getEnglishWord());
             var otherTranslations = vocabularyService.findVocabulariesByVocabularyRange(vRange.getVocabulary_range())
                     .stream()
                     .flatMap(vocabulary ->
-                            findTranslationByVocabularyEnglishWordContaining(vocabulary.getEnglishWord()).stream())
+                            findTranslationsByVocabularyEnglishWordContaining(vocabulary.getEnglishWord()).stream())
                     .sorted(Comparator.comparing(translation -> translation.getTranslation().getVocabulary().getEnglishWord()))
                     .collect(toCollection(LinkedHashSet::new));
             Set<TranslationWithVocabularyRange> orderedResultsSet = new LinkedHashSet<>(initialWordTranslations);
@@ -79,8 +79,9 @@ class VocabularySearchServiceImpl implements VocabularySearchService {
         Set<String> uniquePolishMeanings = new HashSet<>();
         List<TranslationWithVocabularyRange> uniqueTranslations = new ArrayList<>();
         for (TranslationWithVocabularyRange translation : combinedResultsSet) {
-            if (!uniquePolishMeanings.contains(translation.getTranslation().getTranslationVariant().getPolishMeaning())) {
-                uniquePolishMeanings.add(translation.getTranslation().getTranslationVariant().getPolishMeaning());
+            var uniquePolishMeaning = translation.getTranslation().getTranslationVariant().getPolishMeaning();
+            if (!uniquePolishMeanings.contains(uniquePolishMeaning)) {
+                uniquePolishMeanings.add(uniquePolishMeaning);
                 uniqueTranslations.add(translation);
             }
         }
@@ -88,15 +89,20 @@ class VocabularySearchServiceImpl implements VocabularySearchService {
 
     }
 
-    List<TranslationWithVocabularyRange> findTranslationByVocabularyEnglishWordContaining(String query) {
+    public List<TranslationWithVocabularyRange> findTranslationsByVocabularyEnglishWordContaining(String query) {
         return translationRepository.findTranslationByVocabularyEnglishWordContaining(query)
                 .stream()
                 .map(translation -> {
-                    VocabularyRange vr = vocabularyRangeRepository.findVocabularyRangeByVocabularyId(translation.getVocabulary().getId())
-                            .orElse(null);
-                    return new TranslationWithVocabularyRange(translation, vr);
+                    Vocabulary vocabulary = translation.getVocabulary();
+                    Integer vocabularyId = (vocabulary != null) ? vocabulary.getId() : null;
+                    return (vocabularyId != null) ? vocabularyRangeRepository.findVocabularyRangeByVocabularyId(vocabularyId)
+                            .map(vr ->  {
+                                return new TranslationWithVocabularyRange(translation, vr); })
+                            .orElse( new TranslationWithVocabularyRange(translation, null)) : null;
                 })
+                .filter(Objects::nonNull)
                 .toList();
     }
+
 
 }
