@@ -6,6 +6,7 @@ import com.example.englishapp.exeptions.NotFoundException;
 import com.example.englishapp.models.PartOfSpeech;
 import com.example.englishapp.models.Translation;
 import com.example.englishapp.models.TranslationWithVocabularyRange;
+import com.example.englishapp.models.Vocabulary;
 import com.example.englishapp.repositories.*;
 import com.example.englishapp.services.PartOfSpeechService;
 import com.example.englishapp.services.TranslationService;
@@ -24,12 +25,12 @@ import java.util.Optional;
 @RequiredArgsConstructor
 class TranslationServiceImpl implements TranslationService {
 
-    final TranslationRepository translationRepository;
-    final VocabularyRepository vocabularyRepository;
-    final VocabularyRangeRepository vocabularyRangeRepository;
-    final TranslationVariantRepository translationVariantRepository;
-    final PartOfSpeechRepository partOfSpeechRepository;
-    final PartOfSpeechService partOfSpeechService;
+    private final TranslationRepository translationRepository;
+    private final VocabularyRepository vocabularyRepository;
+    private final VocabularyRangeRepository vocabularyRangeRepository;
+    private final TranslationVariantRepository translationVariantRepository;
+    private final PartOfSpeechRepository partOfSpeechRepository;
+    private final PartOfSpeechService partOfSpeechService;
 
     @Override
     public List<Translation> getTranslations() {
@@ -38,25 +39,22 @@ class TranslationServiceImpl implements TranslationService {
 
     @Override
     public Translation getTranslation(Integer id) {
-        var translation = translationRepository.findById(id);
-        if (translation.isPresent())
-            return translation.get();
-        else
-            throw new NotFoundException("Translation was not found");
+        return translationRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Translation was not found"));
     }
 
     @Override
     public List<Translation> getTranslationsByVocabularyId(Integer id) {
-        var translation = translationRepository.findTranslationsByVocabularyId(id);
-        if (!translation.isEmpty())
-            return translation;
-        else
+        List<Translation> translations = translationRepository.findTranslationsByVocabularyId(id);
+        if (translations.isEmpty()) {
             throw new NotFoundException("English word translation was not found");
+        }
+        return translations;
     }
 
     @Override
     public List<TranslationWithVocabularyRange> getTranslationsByVocabularyRangeIdWithVocabularyRange(Integer id) {
-        var findVocabulariesByVocabularyRange = vocabularyRepository.findVocabulariesByVocabularyRange(id);
+        List<Vocabulary> findVocabulariesByVocabularyRange = vocabularyRepository.findVocabulariesByVocabularyRange(id);
         if (findVocabulariesByVocabularyRange.isEmpty())
             throw new NotFoundException("Vocabulary Range was not found");
         return findVocabulariesByVocabularyRange.stream()
@@ -95,9 +93,11 @@ class TranslationServiceImpl implements TranslationService {
                         () -> {
                             throw new NotFoundException("PartOfSpeech not found");
                         });
-        if (Objects.isNull(translation.getId()))
-            return translationRepository.save(translation);
-        else throw new ConflictException("Conflict. Translation exist.");
+        return (Translation) Optional.ofNullable(translation.getId()).map(
+                        (id) -> {
+                            throw new ConflictException("Conflict. Translation exist.");
+                        })
+                .orElseGet(() -> translationRepository.save(translation));
     }
 
     @Override
@@ -115,11 +115,11 @@ class TranslationServiceImpl implements TranslationService {
     @Override
     @Transactional
     public void removeTranslation(@PathVariable Integer id) {
-        var translation = translationRepository.findById(id);
-        if (translation.isPresent()) {
-            translationRepository.deleteById(id);
-        } else
-            throw new NotFoundException("English word was not found");
+        translationRepository.findById(id)
+                .ifPresentOrElse((translation -> translationRepository.deleteById(translation.getId())),
+                        () -> {
+                            throw new NotFoundException("English word was not found");
+                        });
     }
 
     @Override
@@ -184,27 +184,39 @@ class TranslationServiceImpl implements TranslationService {
     @Override
     @Transactional
     public void removeTranslationAndVocabularyAndTranslationVariant(@PathVariable Integer id) {
-        var translation = translationRepository.findById(id);
-        if (translation.isPresent()) {
-            var vocabulary = vocabularyRepository.findVocabularyByTranslationId(id);
-            var translationVariant = translationVariantRepository.findTranslationVariantByTranslationId(id);
-            vocabulary.ifPresent(value -> vocabularyRepository.deleteById(value.getId()));
-            translationVariant.ifPresent(value -> translationVariantRepository.deleteById(value.getId()));
-            translationRepository.deleteById(id);
-        } else
-            throw new NotFoundException("English word was not found");
+        translationRepository.findById(id).ifPresentOrElse(
+                (translation) -> {
+                    vocabularyRepository.findVocabularyByTranslationId(id).ifPresent(
+                            vocabulary -> vocabularyRepository.deleteById(vocabulary.getId()));
+                    translationVariantRepository.findTranslationVariantByTranslationId(id).ifPresent(
+                            translationVariant -> translationVariantRepository.deleteById(translationVariant.getId()));
+                    translationRepository.deleteById(id);
+                },
+                () -> {
+                    throw new NotFoundException("English word was not found");
+                }
+        );
     }
 
     @Override
     @Transactional
     public void removeTranslationAndVocabulary(@PathVariable Integer id) {
-        var translation = translationRepository.findById(id);
-        if (translation.isPresent()) {
-            var vocabulary = vocabularyRepository.findVocabularyByTranslationId(id);
-            vocabulary.ifPresent(value -> vocabularyRepository.deleteById(value.getId()));
-            translationRepository.deleteById(id);
-        } else
-            throw new NotFoundException("English word was not found");
+        translationRepository.findById(id)
+                .ifPresentOrElse(
+                        translation -> {
+                            vocabularyRepository.findVocabularyByTranslationId(id)
+                                    .ifPresentOrElse(
+                                            vocabulary -> vocabularyRepository.deleteById(vocabulary.getId()),
+                                            () -> {
+                                                throw new NotFoundException("English word was not found");
+                                            }
+                                    );
+                            translationRepository.deleteById(id);
+                        },
+                        () -> {
+                            throw new NotFoundException("Translation was not found");
+                        }
+                );
     }
 
     @Override
@@ -217,16 +229,15 @@ class TranslationServiceImpl implements TranslationService {
         if (translationRepository.findById(id).isEmpty()) {
             throw new NotFoundException("Translation was not found");
         }
-        translationRepository.findById(id).ifPresent(translation -> {
-            vocabularyRepository.findVocabularyByTranslationId(id).ifPresent(vocabulary -> {
-                translationVariantRepository.findTranslationVariantByTranslationId(id).ifPresent(translationVariant -> {
-                    vocabularyRangeRepository.findVocabularyRangeByVocabularyId(vocabulary.getId()).ifPresent(vocabularyRangeRepository::delete);
-                    translationRepository.delete(translation);
-                    vocabularyRepository.delete(vocabulary);
-                    translationVariantRepository.delete(translationVariant);
-                });
-            });
-        });
+        translationRepository.findById(id)
+                .ifPresent(translation -> vocabularyRepository.findVocabularyByTranslationId(id)
+                        .ifPresent(vocabulary -> translationVariantRepository.findTranslationVariantByTranslationId(id)
+                                .ifPresent(translationVariant -> {
+                                    vocabularyRangeRepository.findVocabularyRangeByVocabularyId(vocabulary.getId()).ifPresent(vocabularyRangeRepository::delete);
+                                    translationRepository.delete(translation);
+                                    vocabularyRepository.delete(vocabulary);
+                                    translationVariantRepository.delete(translationVariant);
+                                })));
     }
 
 }

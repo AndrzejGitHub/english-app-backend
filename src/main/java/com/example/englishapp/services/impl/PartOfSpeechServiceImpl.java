@@ -14,7 +14,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 class PartOfSpeechServiceImpl implements PartOfSpeechService {
 
-    final PartOfSpeechRepository partOfSpeechRepository;
+    private final PartOfSpeechRepository partOfSpeechRepository;
     @Override
     public List<PartOfSpeech> getPartOfSpeech() {
         return partOfSpeechRepository.findAll();

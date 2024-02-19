@@ -16,8 +16,8 @@ import java.util.Objects;
 @RequiredArgsConstructor
 class VocabularyRangeServiceImpl implements VocabularyRangeService {
 
-    final VocabularyRangeRepository vocabularyRangeRepository;
-    final TranslationRepository translationRepository;
+    private final VocabularyRangeRepository vocabularyRangeRepository;
+    private final TranslationRepository translationRepository;
 
     @Override
     public VocabularyRange insertVocabularyRange(VocabularyRange vocabularyRange) {

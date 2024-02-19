@@ -3,7 +3,6 @@ package com.example.englishapp.controllers;
 import com.example.englishapp.models.dto.TranslationDto;
 import com.example.englishapp.models.dto.TranslationWithVocabularyRangeDto;
 import com.example.englishapp.models.dto.VocabularyDto;
-import com.example.englishapp.repositories.VocabularyRangeRepository;
 import com.example.englishapp.services.VocabularySearchService;
 import com.example.englishapp.services.VocabularyService;
 import lombok.RequiredArgsConstructor;
@@ -23,10 +22,9 @@ import java.util.*;
 @RequestMapping("/api/vocabulary/search")
 public class VocabularySearchRestController {
 
-    final VocabularyService vocabularyService;
-    final VocabularySearchService vocabularySearchService;
-    final VocabularyRangeRepository vocabularyRangeRepository;
-    final ModelMapper modelMapper;
+    private final VocabularyService vocabularyService;
+    private final VocabularySearchService vocabularySearchService;
+    private final ModelMapper modelMapper;
 
     @GetMapping("/startingWith")
     public ResponseEntity<List<VocabularyDto>> searchVocabularyStartingWith(@RequestParam(name = "query") String query) {
@@ -56,7 +54,6 @@ public class VocabularySearchRestController {
                 .map(translationWithVocabularyRange -> modelMapper.map(translationWithVocabularyRange, TranslationWithVocabularyRangeDto.class)).toList();
         return ResponseEntity.status(HttpStatus.OK)
                 .body(translationWithVocabularyRangeDtoList);
-
     }
 
 }

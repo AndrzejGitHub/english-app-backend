@@ -16,8 +16,8 @@ import java.util.List;
 @RequestMapping("/api/part-of-speech")
 public class PartOfSpeechController {
 
-    final PartOfSpeechService partOfSpeechService;
-    final ModelMapper modelMapper;
+    private final PartOfSpeechService partOfSpeechService;
+    private final ModelMapper modelMapper;
 
     @GetMapping()
     public ResponseEntity<List<PartOfSpeechDto>> getPartOfSpeech() {

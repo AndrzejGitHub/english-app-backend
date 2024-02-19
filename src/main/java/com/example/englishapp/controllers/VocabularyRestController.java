@@ -18,8 +18,8 @@ import java.util.Optional;
 @RequestMapping("/api/vocabulary")
 public class VocabularyRestController {
 
-    final VocabularyService vocabularyService;
-    final ModelMapper modelMapper;
+    private final VocabularyService vocabularyService;
+    private final ModelMapper modelMapper;
 
     @GetMapping()
     public ResponseEntity<List<VocabularyDto>> getVocabularies() {

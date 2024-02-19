@@ -24,8 +24,8 @@ import java.util.Optional;
 @RestController
 public class UserRestController {
 
-    final UserService userService;
-    final ModelMapper modelMapper;
+    private final UserService userService;
+    private final ModelMapper modelMapper;
     final HttpServletRequest httpServletRequest;
 
 
@@ -36,7 +36,7 @@ public class UserRestController {
                 .map(ResponseEntity::ok)
                 .orElseThrow(() -> new NotFoundException("User was not found"));
     }
-//    @Secured({"ROLE_ADMIN","ROLE_STUDENT"})
+    @Secured({"ROLE_ADMIN"})
     @GetMapping()
     public ResponseEntity<List<UserDto>> getUsers() {
         return ResponseEntity.status(HttpStatus.OK).body(

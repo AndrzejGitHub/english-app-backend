@@ -278,11 +278,12 @@ class TranslationServiceImplTest {
     void testRemoveTranslation() {
         // Given
         Integer translationId = 1;
-        when(translationRepository.findById(translationId)).thenReturn(Optional.of(new Translation()));
+        Translation translation = new Translation();
+        when(translationRepository.findById(translationId)).thenReturn(Optional.of(translation));
 
         // When and Then
         assertDoesNotThrow(() -> translationService.removeTranslation(translationId));
-        verify(translationRepository, times(1)).deleteById(translationId);
+        verify(translationRepository, times(1)).deleteById(translation.getId());
     }
 
     @Test

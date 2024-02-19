@@ -4,8 +4,6 @@ import com.example.englishapp.exeptions.NotFoundException;
 import com.example.englishapp.models.Translation;
 import com.example.englishapp.models.TranslationWithVocabularyRange;
 import com.example.englishapp.models.Vocabulary;
-import com.example.englishapp.models.VocabularyRange;
-import com.example.englishapp.repositories.PartOfSpeechRepository;
 import com.example.englishapp.repositories.TranslationRepository;
 import com.example.englishapp.repositories.VocabularyRangeRepository;
 import com.example.englishapp.repositories.VocabularyRepository;
@@ -22,10 +20,10 @@ import static java.util.stream.Collectors.toCollection;
 @RequiredArgsConstructor
 class VocabularySearchServiceImpl implements VocabularySearchService {
 
-    final VocabularyRepository vocabularyRepository;
-    final TranslationRepository translationRepository;
-    final VocabularyRangeRepository vocabularyRangeRepository;
-    final VocabularyService vocabularyService;
+    private final VocabularyRepository vocabularyRepository;
+    private final TranslationRepository translationRepository;
+    private final VocabularyRangeRepository vocabularyRangeRepository;
+    private final VocabularyService vocabularyService;
 
 
     @Override
@@ -96,8 +94,7 @@ class VocabularySearchServiceImpl implements VocabularySearchService {
                     Vocabulary vocabulary = translation.getVocabulary();
                     Integer vocabularyId = (vocabulary != null) ? vocabulary.getId() : null;
                     return (vocabularyId != null) ? vocabularyRangeRepository.findVocabularyRangeByVocabularyId(vocabularyId)
-                            .map(vr ->  {
-                                return new TranslationWithVocabularyRange(translation, vr); })
+                            .map(vr -> new TranslationWithVocabularyRange(translation, vr))
                             .orElse( new TranslationWithVocabularyRange(translation, null)) : null;
                 })
                 .filter(Objects::nonNull)

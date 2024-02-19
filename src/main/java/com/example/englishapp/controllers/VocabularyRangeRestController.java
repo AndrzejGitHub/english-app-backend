@@ -12,8 +12,9 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @RequestMapping("/api/vocabulary-range")
 public class VocabularyRangeRestController {
-    final VocabularyRangeService vocabularyRangeService;
-    final ModelMapper modelMapper;
+
+    private final VocabularyRangeService vocabularyRangeService;
+    private final ModelMapper modelMapper;
 
     @GetMapping("/{id}")
     public ResponseEntity<VocabularyRangeDto> getVocabularyRangeByTranslationId(@PathVariable Integer id) {

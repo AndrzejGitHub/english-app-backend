@@ -1,14 +1,10 @@
 package com.example.englishapp.controllers;
 
-import com.example.englishapp.exeptions.NotFoundException;
 import com.example.englishapp.models.Translation;
 import com.example.englishapp.models.TranslationWithVocabularyRange;
-import com.example.englishapp.models.dto.PartOfSpeechDto;
 import com.example.englishapp.models.dto.TranslationDto;
 import com.example.englishapp.models.dto.TranslationWithVocabularyRangeDto;
-import com.example.englishapp.services.PartOfSpeechService;
 import com.example.englishapp.services.TranslationService;
-import com.example.englishapp.services.VocabularyService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -24,10 +20,8 @@ import java.util.Optional;
 @RequestMapping("/api/translation")
 public class TranslationRestController {
 
-    final TranslationService translationService;
-    final VocabularyService vocabularyService;
-    final PartOfSpeechService partOfSpeechService;
-    final ModelMapper modelMapper;
+    private final TranslationService translationService;
+    private final ModelMapper modelMapper;
 
     @GetMapping()
     public ResponseEntity<List<TranslationDto>> getTranslations() {
@@ -95,7 +89,6 @@ public class TranslationRestController {
                         modelMapper.map(translationWithVocabularyRangeDto, TranslationWithVocabularyRange.class), id))
                 .map(translationUpdated -> ResponseEntity.status(HttpStatus.OK).body(id))
                 .orElse(ResponseEntity.status(HttpStatus.BAD_REQUEST).build());
-
     }
 
     @DeleteMapping("{id}")

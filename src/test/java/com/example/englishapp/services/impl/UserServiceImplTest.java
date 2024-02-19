@@ -15,6 +15,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Optional;
 
@@ -28,6 +29,8 @@ class UserServiceImplTest {
     UserServiceImpl userService;
     @Mock
     UserRepository userRepository;
+    @Mock
+    PasswordEncoder passwordEncoder;
 
     @Test
     void getUsers() {
@@ -55,7 +58,6 @@ class UserServiceImplTest {
     }
 
 
-
     @Test
     void getUser_NotFound() {
         //given
@@ -73,10 +75,15 @@ class UserServiceImplTest {
         User user = User.builder()
                 .firstName("name")
                 .lastName("surname")
+                .password("encodedPassword")
                 .build();
+
+        Mockito.when(passwordEncoder.encode(Mockito.any(CharSequence.class))).thenReturn("encodedPassword");
+        UserServiceImpl userService = new UserServiceImpl(userRepository, passwordEncoder);
+
         //when
         Mockito.when(userRepository.save(user)).thenReturn(user);
-        var response = userService.insertUser(user);
+        User response = userService.insertUser(user);
         //then
         assertEquals(user, response);
         Mockito.verify(userRepository).save(user);

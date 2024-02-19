@@ -17,7 +17,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 class VocabularyServiceImpl implements VocabularyService {
 
-    final VocabularyRepository vocabularyRepository;
+    private final VocabularyRepository vocabularyRepository;
 
     @Override
     public List<Vocabulary> getVocabularies() {
