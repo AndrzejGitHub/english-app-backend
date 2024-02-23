@@ -4,7 +4,6 @@ import com.example.englishapp.exeptions.ConflictException;
 import com.example.englishapp.exeptions.NotFoundException;
 import com.example.englishapp.models.Vocabulary;
 import com.example.englishapp.repositories.VocabularyRepository;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -72,40 +71,40 @@ class VocabularyServiceImplTest {
     }
 
     @Test
-    void searchVocabulariesStartingWith_TermIsNull() {
+    void getVocabulariesStartingWith_TermIsNull() {
         // given
         String term = null;
         // then
-        assertThrows(NotFoundException.class, () -> vocabularyService.searchVocabulariesStartingWith(term));
+        assertThrows(NotFoundException.class, () -> vocabularyService.getVocabulariesStartingWith(term));
     }
 
     @Test
-    void searchVocabulariesStartingWith_TermIsTooShort() {
+    void getVocabulariesStartingWith_TermIsTooShort() {
         // given
         String term = "a";
         // then
-        assertThrows(NotFoundException.class, () -> vocabularyService.searchVocabulariesStartingWith(term));
+        assertThrows(NotFoundException.class, () -> vocabularyService.getVocabulariesStartingWith(term));
     }
 
     @Test
-    void searchVocabulariesStartingWith_ValidTerm() {
+    void getVocabulariesStartingWith_ValidTerm() {
         // given
         String term = "ap";
         when(vocabularyRepository.findByEnglishWordIgnoreCaseStartingWith(term)).thenReturn(expectedVocabularies);
         // when
-        List<Vocabulary> response = vocabularyService.searchVocabulariesStartingWith(term);
+        List<Vocabulary> response = vocabularyService.getVocabulariesStartingWith(term);
         // then
         assertEquals(expectedVocabularies, response);
         verify(vocabularyRepository).findByEnglishWordIgnoreCaseStartingWith(term);
     }
 
     @Test
-    void searchVocabularies() {
+    void getVocabulariesIgnoreCase() {
         // given
-        String term = "apple";
+        String term = "aPple";
         when(vocabularyRepository.findByEnglishWordIgnoreCase(term)).thenReturn(expectedVocabularies);
         // when
-        List<Vocabulary> response = vocabularyService.searchVocabularies(term);
+        List<Vocabulary> response = vocabularyService.getVocabulariesIgnoreCase(term);
         // then
         assertEquals(expectedVocabularies, response);
         verify(vocabularyRepository).findByEnglishWordIgnoreCase(term);

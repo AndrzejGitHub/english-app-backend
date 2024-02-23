@@ -28,7 +28,7 @@ public class VocabularySearchRestController {
 
     @GetMapping("/startingWith")
     public ResponseEntity<List<VocabularyDto>> searchVocabularyStartingWith(@RequestParam(name = "query") String query) {
-        var vocabularies = vocabularyService.searchVocabulariesStartingWith(query).stream().map(
+        var vocabularies = vocabularyService.getVocabulariesStartingWith(query).stream().map(
                 vocabulary -> modelMapper.map(vocabulary, VocabularyDto.class)).toList();
         return ResponseEntity.status(HttpStatus.OK).body(vocabularies);
     }
@@ -36,7 +36,7 @@ public class VocabularySearchRestController {
     @GetMapping()
     public ResponseEntity<List<VocabularyDto>> searchVocabulary(@RequestParam(name = "query") String query) {
         return ResponseEntity.status(HttpStatus.OK).body(
-                vocabularyService.searchVocabularies(query).stream().map(
+                vocabularyService.getVocabulariesIgnoreCase(query).stream().map(
                         vocabulary -> modelMapper.map(vocabulary, VocabularyDto.class)).toList()
         );
     }

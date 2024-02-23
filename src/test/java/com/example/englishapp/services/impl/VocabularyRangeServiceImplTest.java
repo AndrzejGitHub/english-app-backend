@@ -1,6 +1,5 @@
 package com.example.englishapp.services.impl;
 
-import com.example.englishapp.exeptions.ConflictException;
 import com.example.englishapp.exeptions.NotFoundException;
 import com.example.englishapp.models.Translation;
 import com.example.englishapp.models.Vocabulary;
@@ -31,31 +30,6 @@ class VocabularyRangeServiceImplTest {
     private VocabularyRangeServiceImpl vocabularyRangeService;
 
     @Test
-    void testInsertVocabularyRange_Success() {
-        // given
-        VocabularyRange vocabularyRange = new VocabularyRange();
-        when(vocabularyRangeRepository.save(vocabularyRange)).thenReturn(vocabularyRange);
-
-        // when
-        VocabularyRange result = vocabularyRangeService.insertVocabularyRange(vocabularyRange);
-
-        // then
-        assertNotNull(result);
-        assertEquals(vocabularyRange, result);
-        verify(vocabularyRangeRepository).save(vocabularyRange);
-    }
-
-    @Test
-    void testInsertVocabularyRange_Conflict() {
-        // given
-        VocabularyRange vocabularyRange = new VocabularyRange();
-        vocabularyRange.setVocabulary_range(1);
-        // then
-        assertThrows(ConflictException.class, () -> vocabularyRangeService.insertVocabularyRange(vocabularyRange));
-        verifyNoInteractions(vocabularyRangeRepository);
-    }
-
-    @Test
     void testGetVocabularyRangeByTranslationId_ExistingTranslation() {
         // given
         Integer translationId = 1;
@@ -64,16 +38,17 @@ class VocabularyRangeServiceImplTest {
         Vocabulary vocabulary = new Vocabulary();
         vocabulary.setId(1);
         translation.setVocabulary(vocabulary);
+
         when(translationRepository.findById(translationId)).thenReturn(Optional.of(translation));
         VocabularyRange expectedVocabularyRange = new VocabularyRange();
         when(vocabularyRangeRepository.findVocabularyRangeByVocabularyId(vocabulary.getId())).thenReturn(Optional.of(expectedVocabularyRange));
 
         // when
-        VocabularyRange result = vocabularyRangeService.getVocabularyRangeByTranslationId(translationId);
+        Optional<VocabularyRange> result = vocabularyRangeService.getVocabularyRangeByTranslationId(translationId);
 
         // then
-        assertNotNull(result);
-        assertEquals(expectedVocabularyRange, result);
+        assertTrue(result.isPresent());
+        assertEquals(expectedVocabularyRange, result.get());
         verify(translationRepository).findById(translationId);
         verify(vocabularyRangeRepository).findVocabularyRangeByVocabularyId(vocabulary.getId());
     }
@@ -89,4 +64,46 @@ class VocabularyRangeServiceImplTest {
         verify(translationRepository).findById(translationId);
         verifyNoInteractions(vocabularyRangeRepository);
     }
+    @Test
+    void testInsertVocabularyRangeToExistingWordWithoutVocabularyRange() {
+        // given
+        Vocabulary vocabulary = new Vocabulary();
+        vocabulary.setEnglishWord("apple");
+        Integer vr = 5;
+
+        // when
+        when(vocabularyRangeRepository.findVocabularyRangeByVocabulary_EnglishWord("apple")).thenReturn(Optional.empty());
+        when(vocabularyRangeRepository.save(any())).thenAnswer(invocation -> invocation.getArgument(0));
+
+        VocabularyRange result = vocabularyRangeService.insertVocabularyRangeToExistingWordWithoutVocabularyRange(vocabulary, vr);
+
+        // then
+        assertNotNull(result);
+        assertEquals(vr, result.getVocabulary_range());
+        assertEquals(vocabulary, result.getVocabulary());
+        verify(vocabularyRangeRepository, times(2)).save(any());
+    }
+
+    @Test
+    void testInsertVocabularyRangeToExistingWordWithExistingVocabularyRange() {
+        // given
+        Vocabulary vocabulary = new Vocabulary();
+        vocabulary.setEnglishWord("apple");
+        Integer vr = 10;
+
+        VocabularyRange existingVocabularyRange = new VocabularyRange();
+        existingVocabularyRange.setVocabulary_range(7);
+
+        // when
+        when(vocabularyRangeRepository.findVocabularyRangeByVocabulary_EnglishWord("apple")).thenReturn(Optional.of(existingVocabularyRange));
+        when(vocabularyRangeRepository.save(any())).thenAnswer(invocation -> invocation.getArgument(0));
+
+        VocabularyRange result = vocabularyRangeService.insertVocabularyRangeToExistingWordWithoutVocabularyRange(vocabulary, vr);
+
+        // then
+        assertNotNull(result);
+        assertEquals(vr, result.getVocabulary_range());
+        verify(vocabularyRangeRepository, times(1)).save(any());
+    }
+
 }

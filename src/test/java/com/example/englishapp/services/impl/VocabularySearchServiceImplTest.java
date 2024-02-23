@@ -5,7 +5,6 @@ import com.example.englishapp.models.Translation;
 import com.example.englishapp.models.TranslationWithVocabularyRange;
 import com.example.englishapp.models.Vocabulary;
 import com.example.englishapp.models.VocabularyRange;
-import com.example.englishapp.repositories.PartOfSpeechRepository;
 import com.example.englishapp.repositories.TranslationRepository;
 import com.example.englishapp.repositories.VocabularyRangeRepository;
 import com.example.englishapp.repositories.VocabularyRepository;
@@ -135,11 +134,11 @@ class VocabularySearchServiceImplTest {
     void testSearchTranslationsWithVocabularyRangeByEnglishWord_VocabularyNotFound() {
         // given
         String query = "apple";
-        when(vocabularyService.searchVocabularies(query)).thenReturn(new LinkedList<>());
+        when(vocabularyService.getVocabulariesIgnoreCase(query)).thenReturn(new LinkedList<>());
 
         // then
         assertTrue(vocabularySearchService.searchTranslationsWithVocabularyRangeByEnglishWord(query).isEmpty());
-        verify(vocabularyService).searchVocabularies(query);
+        verify(vocabularyService).getVocabulariesIgnoreCase(query);
         verifyNoInteractions(vocabularyRangeRepository);
         verifyNoInteractions(translationRepository);
     }
@@ -163,7 +162,7 @@ class VocabularySearchServiceImplTest {
         when(vocabularyRangeRepository.findVocabularyRangeByVocabularyId(10))
                 .thenReturn(Optional.of(vocabularyRange1));
         // when
-        List<TranslationWithVocabularyRange> result = vocabularySearchService.findTranslationsByVocabularyEnglishWordContaining(query);
+        List<TranslationWithVocabularyRange> result = vocabularySearchService.findTranslationsByVocabularyEnglishWord(query);
         // then
         assertEquals(1, result.size());
         assertEquals(1, result.getFirst().getTranslation().getId());

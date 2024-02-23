@@ -10,9 +10,9 @@ public interface VocabularyService {
 
     Vocabulary getVocabulary(Integer id);
 
-    List<Vocabulary> searchVocabulariesStartingWith(String term);
+    List<Vocabulary> getVocabulariesStartingWith(String term);
 
-    List<Vocabulary> searchVocabularies(String term);
+    List<Vocabulary> getVocabulariesIgnoreCase(String term);
 
     Vocabulary insertVocabulary(Vocabulary vocabulary);
 

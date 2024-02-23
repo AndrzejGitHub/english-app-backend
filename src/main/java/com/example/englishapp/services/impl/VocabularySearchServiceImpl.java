@@ -55,19 +55,19 @@ class VocabularySearchServiceImpl implements VocabularySearchService {
 
     @Override
     public List<TranslationWithVocabularyRange> searchTranslationsWithVocabularyRangeByEnglishWord(String query) {
-        var vocabularies = vocabularyService.searchVocabularies(query);
+        var vocabularies = vocabularyService.getVocabulariesIgnoreCase(query);
         if (vocabularies.isEmpty())
             return List.of();
         var firstVocabulary = vocabularies.getFirst();
         var vocabularyRange = vocabularyRangeRepository.findVocabularyRangeByVocabularyId(firstVocabulary.getId());
         if (vocabularyRange.isEmpty())
-            return findTranslationsByVocabularyEnglishWordContaining(query);
+            return findTranslationsByVocabularyEnglishWord(query);
         Set<TranslationWithVocabularyRange> combinedResultsSet = vocabularyRange.map(vRange -> {
-            var initialWordTranslations = findTranslationsByVocabularyEnglishWordContaining(firstVocabulary.getEnglishWord());
+            var initialWordTranslations = findTranslationsByVocabularyEnglishWord(firstVocabulary.getEnglishWord());
             var otherTranslations = vocabularyService.findVocabulariesByVocabularyRange(vRange.getVocabulary_range())
                     .stream()
                     .flatMap(vocabulary ->
-                            findTranslationsByVocabularyEnglishWordContaining(vocabulary.getEnglishWord()).stream())
+                            findTranslationsByVocabularyEnglishWord(vocabulary.getEnglishWord()).stream())
                     .sorted(Comparator.comparing(translation -> translation.getTranslation().getVocabulary().getEnglishWord()))
                     .collect(toCollection(LinkedHashSet::new));
             Set<TranslationWithVocabularyRange> orderedResultsSet = new LinkedHashSet<>(initialWordTranslations);
@@ -87,8 +87,8 @@ class VocabularySearchServiceImpl implements VocabularySearchService {
 
     }
 
-    public List<TranslationWithVocabularyRange> findTranslationsByVocabularyEnglishWordContaining(String query) {
-        return translationRepository.findTranslationByVocabularyEnglishWordContaining(query)
+    public List<TranslationWithVocabularyRange> findTranslationsByVocabularyEnglishWord(String query) {
+        return translationRepository.findTranslationByVocabularyEnglishWord(query)
                 .stream()
                 .map(translation -> {
                     Vocabulary vocabulary = translation.getVocabulary();

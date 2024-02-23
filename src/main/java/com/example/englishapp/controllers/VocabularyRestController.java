@@ -21,7 +21,7 @@ public class VocabularyRestController {
     private final VocabularyService vocabularyService;
     private final ModelMapper modelMapper;
 
-    @GetMapping()
+    @GetMapping
     public ResponseEntity<List<VocabularyDto>> getVocabularies() {
         return ResponseEntity.status(HttpStatus.OK).body(vocabularyService.getVocabularies()
                 .stream().map(vocabulary -> modelMapper.map(vocabulary, VocabularyDto.class)).toList());
@@ -41,7 +41,7 @@ public class VocabularyRestController {
         );
     }
 
-    @PostMapping()
+    @PostMapping
     public ResponseEntity<VocabularyDto> addVocabulary(@Valid @RequestBody VocabularyDto vocabularyDto) {
         return Optional.ofNullable(vocabularyService.insertVocabulary(modelMapper.map(vocabularyDto, Vocabulary.class)))
                 .map(vocabulary -> ResponseEntity.status(HttpStatus.OK).body(modelMapper.map(vocabulary, VocabularyDto.class)))

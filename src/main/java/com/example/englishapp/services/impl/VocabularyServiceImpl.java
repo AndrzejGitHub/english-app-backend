@@ -31,7 +31,7 @@ class VocabularyServiceImpl implements VocabularyService {
     }
 
     @Override
-    public List<Vocabulary> searchVocabulariesStartingWith(String term) {
+    public List<Vocabulary> getVocabulariesStartingWith(String term) {
         return Optional.ofNullable(term)
                 .filter(t -> t.length() >= 2)
                 .map(vocabularyRepository::findByEnglishWordIgnoreCaseStartingWith)
@@ -39,7 +39,7 @@ class VocabularyServiceImpl implements VocabularyService {
     }
 
     @Override
-    public List<Vocabulary> searchVocabularies(String term) {
+    public List<Vocabulary> getVocabulariesIgnoreCase(String term) {
         return vocabularyRepository.findByEnglishWordIgnoreCase(term);
     }
 

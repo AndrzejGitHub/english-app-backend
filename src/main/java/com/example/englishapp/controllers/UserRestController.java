@@ -31,7 +31,6 @@ public class UserRestController {
 
     @GetMapping("/who-am-i")
     public ResponseEntity<User> whoAmI(Principal principal) {
-        System.out.println("Principal " + principal.getName());
         return userService.findByEmail(principal.getName())
                 .map(ResponseEntity::ok)
                 .orElseThrow(() -> new NotFoundException("User was not found"));
