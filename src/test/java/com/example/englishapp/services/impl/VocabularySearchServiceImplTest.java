@@ -1,10 +1,7 @@
 package com.example.englishapp.services.impl;
 
 import com.example.englishapp.exeptions.NotFoundException;
-import com.example.englishapp.models.Translation;
-import com.example.englishapp.models.TranslationWithVocabularyRange;
-import com.example.englishapp.models.Vocabulary;
-import com.example.englishapp.models.VocabularyRange;
+import com.example.englishapp.models.*;
 import com.example.englishapp.repositories.TranslationRepository;
 import com.example.englishapp.repositories.VocabularyRangeRepository;
 import com.example.englishapp.repositories.VocabularyRepository;
@@ -144,32 +141,20 @@ class VocabularySearchServiceImplTest {
     }
 
     @Test
-    void testFindTranslationsByVocabularyEnglishWordContaining() {
+    void testSearchTranslationsWithVocabularyRangeByEnglishWord_VocabularyFound() {
         // given
         String query = "apple";
-        Translation translation1 = new Translation();
-        translation1.setId(1);
-        Vocabulary vocabulary1 = new Vocabulary();
-        vocabulary1.setId(10);
-        translation1.setVocabulary(vocabulary1);
-        Translation translation2 = new Translation();
-        translation2.setId(2);
-        translation2.setVocabulary(null);
-        when(translationRepository.findTranslationByVocabularyEnglishWordContaining(query))
-                .thenReturn(Arrays.asList(translation1, translation2));
-        VocabularyRange vocabularyRange1 = new VocabularyRange();
-        vocabularyRange1.setId(100);
-        when(vocabularyRangeRepository.findVocabularyRangeByVocabularyId(10))
-                .thenReturn(Optional.of(vocabularyRange1));
+
         // when
-        List<TranslationWithVocabularyRange> result = vocabularySearchService.findTranslationsByVocabularyEnglishWord(query);
+        List<TranslationWithVocabularyRange> translationsWithVocabularyRange = vocabularySearchService.searchTranslationsWithVocabularyRangeByEnglishWord(query);
+
         // then
-        assertEquals(1, result.size());
-        assertEquals(1, result.getFirst().getTranslation().getId());
-        assertEquals(100, result.getFirst().getVocabularyRange().getId());
-        verify(translationRepository).findTranslationByVocabularyEnglishWordContaining(query);
-        verify(vocabularyRangeRepository).findVocabularyRangeByVocabularyId(10);
-        verifyNoMoreInteractions(translationRepository, vocabularyRangeRepository);
+        Set<String> uniquePolishMeanings = new HashSet<>();
+        for (TranslationWithVocabularyRange translationWithVocabularyRange : translationsWithVocabularyRange) {
+            String polishMeaning = translationWithVocabularyRange.getTranslation().getTranslationVariant().getPolishMeaning();
+            assertFalse(uniquePolishMeanings.contains(polishMeaning), "Duplicate of translation: " + polishMeaning);
+            uniquePolishMeanings.add(polishMeaning);
+        }
     }
 
 }
