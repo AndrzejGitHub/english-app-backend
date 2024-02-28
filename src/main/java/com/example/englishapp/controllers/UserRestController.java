@@ -54,7 +54,7 @@ public class UserRestController {
     @PostMapping()
     public ResponseEntity<UserDtoAdd> addUser(@Valid @RequestBody UserDtoAdd userDtoAdd) {
         return Optional.ofNullable(userService.insertUser(modelMapper.map(userDtoAdd, User.class)))
-                .map(user -> ResponseEntity.status(HttpStatus.OK).body(
+                .map(user -> ResponseEntity.status(HttpStatus.CREATED).body(
                         modelMapper.map(user, UserDtoAdd.class)))
                 .orElse(ResponseEntity.status(HttpStatus.BAD_REQUEST).body(userDtoAdd));
     }
