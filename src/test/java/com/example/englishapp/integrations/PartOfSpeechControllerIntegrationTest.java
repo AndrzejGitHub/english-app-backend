@@ -12,20 +12,16 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 @SpringBootTest
 @ActiveProfiles("test")
 @AutoConfigureMockMvc
-//@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class PartOfSpeechControllerIntegrationTest {
 
     @Autowired
     MockMvc mockMvc;
 
-
-//    @WithMockUser(roles = "ADMIN")
 @Test
 public void getPartOfSpeech() throws Exception {
     mockMvc.perform(MockMvcRequestBuilders.get("/api/part-of-speech"))
-            .andExpect(MockMvcResultMatchers.status().isOk());
-//            .andExpect(MockMvcResultMatchers.content().json(JSON));
+            .andExpect(MockMvcResultMatchers.status().isOk())
+            .andExpect(MockMvcResultMatchers.content().json("[]"));
 }
-
 
 }
