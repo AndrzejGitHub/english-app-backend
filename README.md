@@ -33,8 +33,8 @@
 <ul>
     <li>The <code>backend</code> service is configured to build its Docker image using the following configuration:</li>
     <pre> <code>backend:
-                  build: 
-                    ../english-app</code></pre>
+        build: 
+          ../english-app</code></pre>
     <p>This specifies the directory containing the Dockerfile for building the backend image.</p>
     <li>The <code>frontend</code> service is configured to build its Docker image using the following configuration:</li>
     <pre><code>
