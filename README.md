@@ -28,3 +28,13 @@
 </ul>
 <h3>IntelliJ IDEA Integration:</h3>
 <p>You can run the application directly from IntelliJ IDEA by opening the project and clicking on the Docker icon in the sidebar, then selecting <code>docker-compose.yaml</code> and clicking on the green play button to start the services.</p>
+<h3>Docker Compose Configuration Details:</h3>
+<p>In the <code>docker-compose.yaml</code> file:</p>
+<ul>
+    <li><code>backend</code> and <code>frontend</code> services are configured to build their Docker images using the following configuration:</li>
+    <pre><code>build:
+  context: ../english-app-angular
+    </code></pre>
+    <p>This specifies the directory containing the Dockerfile for building the respective backend and frontend images.</p>
+    <li>Ensure that the paths specified in the <code>context</code> field match the actual directory structure of your project.</li>
+</ul>
