@@ -6,11 +6,11 @@
     <changeSet id="createMySqlUser" author="admin">
         <preConditions onFail="MARK_RAN">
             <not>
-                <sqlCheck expectedResult="0">SELECT COUNT(*) FROM mysql.user WHERE user = 'user' AND host = 'my-sql'</sqlCheck>
+                <sqlCheck expectedResult="0">SELECT COUNT(*) FROM mysql.user WHERE user = 'user' AND host = 'localhost'</sqlCheck>
             </not>
         </preConditions>
-        <sql>CREATE USER 'user'@'my-sql' IDENTIFIED BY 'pass';</sql>
-        <sql>GRANT ALL PRIVILEGES ON `english-app`.* TO 'user'@'my-sql';</sql>
+        <sql>CREATE USER 'user'@'localhost' IDENTIFIED BY 'pass';</sql>
+        <sql>GRANT ALL PRIVILEGES ON `english-app`.* TO 'user'@'localhost';</sql>
     </changeSet>
 
 </databaseChangeLog>

@@ -4,6 +4,7 @@
                                        https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
 
     <include file="db/changelog/create-user-in-mysql.xml"/>
+
     <include file="/db/changelog/create-user-tables.xml"/>
     <include file="/db/changelog/create-part-of-speech-table.xml"/>
     <include file="/db/changelog/create-vocabulary-table.xml"/>
