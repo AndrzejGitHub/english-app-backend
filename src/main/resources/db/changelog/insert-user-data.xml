@@ -3,7 +3,7 @@
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
                                        https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
 
-    <changeSet id="insert-sample-data-user-data" author="andrzej.pietrzyk">
+    <changeSet id="addUserData" author="admin">
         <insert tableName="user_data">
             <column name="email" value="jan@example.com"/>
             <column name="first_name" value="Jan"/>
@@ -12,7 +12,7 @@
         </insert>
     </changeSet>
 
-    <changeSet id="insert-sample-data-user-roles" author="andrzej.pietrzyk">
+    <changeSet id="addUserRole" author="admin">
         <insert tableName="user_roles">
             <column name="user_id" value="1"/>
             <column name="roles" value="ROLE_ADMIN"/>

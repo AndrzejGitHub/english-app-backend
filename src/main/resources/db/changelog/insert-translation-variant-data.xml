@@ -1,0 +1,50 @@
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+
+    <changeSet id="addTranslationVariants" author="admin">
+        <insert tableName="translation_variant">
+            <column name="polish_meaning" value="przytyć, przybrać (na wadze)"/>
+        </insert>
+        <insert tableName="translation_variant">
+            <column name="polish_meaning" value="zakładać coś, nakładać coś (o ubraniu)"/>
+        </insert>
+        <insert tableName="translation_variant">
+            <column name="polish_meaning" value="nakładać coś (np. krem, makijaż)"/>
+        </insert>
+        <insert tableName="translation_variant">
+            <column name="polish_meaning" value="włączać coś, uruchamiać coś"/>
+        </insert>
+        <insert tableName="translation_variant">
+            <column name="polish_meaning" value="załączać coś, puszczać coś (np. płytę CD)"/>
+        </insert>
+        <insert tableName="translation_variant">
+            <column name="polish_meaning" value="podawać kogoś (do telefonu), połączyć z kimś (telefonicznie)"/>
+        </insert>
+        <insert tableName="translation_variant">
+            <column name="polish_meaning" value="powiadomić kogoś o czymś, przedstawiać coś komuś"/>
+        </insert>
+        <insert tableName="translation_variant">
+            <column name="polish_meaning" value="produkować, robić (w szczególności, gdy tworzymy lub produkujemy coś nowego)"/>
+        </insert>
+        <insert tableName="translation_variant">
+            <column name="polish_meaning" value="przygotowywać, sporządzać (np. jedzenie, picie)"/>
+        </insert>
+        <insert tableName="translation_variant">
+            <column name="polish_meaning" value="powodować"/>
+        </insert>
+        <insert tableName="translation_variant">
+            <column name="polish_meaning" value="zmuszać (kogoś do zrobienia czegoś)"/>
+        </insert>
+        <insert tableName="translation_variant">
+            <column name="polish_meaning" value="wyrób firmy"/>
+        </insert>
+        <insert tableName="translation_variant">
+            <column name="polish_meaning" value="marka"/>
+        </insert>
+        <insert tableName="translation_variant">
+            <column name="polish_meaning" value="dać radę (np. dotrzeć gdzieś na czas)"/>
+        </insert>
+    </changeSet>
+
+</databaseChangeLog>

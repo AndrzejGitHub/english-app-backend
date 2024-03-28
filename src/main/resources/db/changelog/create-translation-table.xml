@@ -1,0 +1,43 @@
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.3.xsd">
+
+    <changeSet id="createTranslationTable" author="admin">
+        <createTable tableName="translation">
+            <column name="translation_id" type="INT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="part_of_speech_id" type="INT">
+            </column>
+            <column name="vocabulary_id" type="INT">
+            </column>
+            <column name="translation_variant_id" type="INT">
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="add-foreign-key" author="admin">
+        <addForeignKeyConstraint baseTableName="translation"
+                                 baseColumnNames="part_of_speech_id"
+                                 constraintName="FK_translation_part_of_speech_id"
+                                 referencedTableName="part_of_speech"
+                                 referencedColumnNames="part_of_speech_id"
+                                         onDelete="CASCADE"
+                                         onUpdate="CASCADE"/>
+        <addForeignKeyConstraint baseTableName="translation"
+                                 baseColumnNames="vocabulary_id"
+                                 constraintName="FK_translation_vocabulary_id"
+                                 referencedTableName="vocabulary"
+                                 referencedColumnNames="vocabulary_id"
+                                         onDelete="CASCADE"
+                                         onUpdate="CASCADE"/>
+        <addForeignKeyConstraint baseTableName="translation"
+                                 baseColumnNames="translation_variant_id"
+                                 constraintName="FK_translation_translation_variant_id"
+                                 referencedTableName="translation_variant"
+                                 referencedColumnNames="translation_variant_id"
+                                         onDelete="CASCADE"
+                                         onUpdate="CASCADE"/>
+    </changeSet>
+
+</databaseChangeLog>

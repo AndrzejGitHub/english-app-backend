@@ -1,0 +1,16 @@
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                                       https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet id="createMySqlUser" author="admin">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <sqlCheck expectedResult="0">SELECT COUNT(*) FROM mysql.user WHERE user = 'user' AND host = 'my-sql'</sqlCheck>
+            </not>
+        </preConditions>
+        <sql>CREATE USER 'user'@'my-sql' IDENTIFIED BY 'pass';</sql>
+        <sql>GRANT ALL PRIVILEGES ON `english-app`.* TO 'user'@'my-sql';</sql>
+    </changeSet>
+
+</databaseChangeLog>

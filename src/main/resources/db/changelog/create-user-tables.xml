@@ -3,7 +3,7 @@
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
                                        https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
 
-    <changeSet id="create-user-data-table" author="andrzej.pietrzyk">
+    <changeSet id="createUserDataTable" author="admin">
         <createTable tableName="user_data">
             <column name="user_id" type="INT" autoIncrement="true">
                 <constraints primaryKey="true" nullable="false"/>
@@ -15,7 +15,7 @@
         </createTable>
     </changeSet>
 
-    <changeSet id="create-user-roles-table" author="andrzej.pietrzyk">
+    <changeSet id="create-user-roles-table" author="admin">
         <createTable tableName="user_roles">
             <column name="user_id" type="INT">
                 <constraints nullable="false"/>
@@ -24,7 +24,7 @@
         </createTable>
     </changeSet>
 
-    <changeSet id="add-foreign-key" author="andrzej.pietrzyk">
+    <changeSet id="add-foreign-key" author="admin">
         <addForeignKeyConstraint baseTableName="user_roles"
                                  baseColumnNames="user_id"
                                  referencedTableName="user_data"

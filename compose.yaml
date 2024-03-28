@@ -1,0 +1,64 @@
+services:
+  backend:
+#    build: ./
+    build: ../english-app
+    ports:
+      - 8080:8080
+    restart: always
+    environment:
+      MYSQL_HOST: my-sql
+    networks:
+      - spring-mysql
+      - angular-spring
+    depends_on:
+      - my-sql
+
+  my-sql:
+    image: mysql:8.3.0
+    environment:
+      MYSQL_PASSWORD: pass
+      MYSQL_ROOT_PASSWORD: pass
+      MYSQL_DATABASE: english-app
+      MYSQL_USER: user
+    restart: always
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "my-sql", "--silent" ]
+      interval: 3s
+      retries: 5
+      start_period: 30s
+    ports:
+      - 3600:3600
+    volumes:
+      - db-data:/var/lib/mysql
+    networks:
+      - spring-mysql
+
+  frontend:
+    build:
+#      context: frontend
+      context: ../english-app-angular
+    ports:
+      - 4200:4200
+    networks:
+      - angular-spring
+    depends_on:
+      - backend
+    expose:
+      - 4200
+
+  phpmyadmin:
+    image: phpmyadmin
+    restart: always
+    ports:
+      - 8081:80
+    environment:
+      - PMA_ARBITRARY=1
+    networks:
+      - spring-mysql
+
+volumes:
+  db-data: { }
+
+networks:
+  spring-mysql: { }
+  angular-spring: { }

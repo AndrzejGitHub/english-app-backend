@@ -1,0 +1,20 @@
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+
+    <changeSet id="addPartOfSpeechValues" author="admin">
+        <insert tableName="part_of_speech">
+            <column name="name" value="verb"/>
+        </insert>
+        <insert tableName="part_of_speech">
+            <column name="name" value="noun"/>
+        </insert>
+        <insert tableName="part_of_speech">
+            <column name="name" value="idiom"/>
+        </insert>
+        <insert tableName="part_of_speech">
+            <column name="name" value="phrasal verb"/>
+        </insert>
+    </changeSet>
+
+</databaseChangeLog>

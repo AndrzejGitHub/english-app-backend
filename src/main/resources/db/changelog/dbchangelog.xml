@@ -3,7 +3,19 @@
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
                                        https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
 
-    <include file="db/changelog/create-tables.xml"/>
-    <include file="db/changelog/insert-data.xml"/>
+    <include file="db/changelog/create-user-in-mysql.xml"/>
+    <include file="/db/changelog/create-user-tables.xml"/>
+    <include file="/db/changelog/create-part-of-speech-table.xml"/>
+    <include file="/db/changelog/create-vocabulary-table.xml"/>
+    <include file="/db/changelog/create-translation-variant-table.xml"/>
+    <include file="/db/changelog/create-translation-table.xml"/>
+    <include file="/db/changelog/create-vocabulary-range-table.xml"/>
+
+    <include file="/db/changelog/insert-user-data.xml"/>
+    <include file="/db/changelog/insert-part-of-speech-data.xml"/>
+    <include file="/db/changelog/insert-vocabulary-data.xml"/>
+    <include file="/db/changelog/insert-translation-variant-data.xml"/>
+    <include file="/db/changelog/insert-translation-data.xml"/>
+    <include file="/db/changelog/insert-vocabulary-range-data.xml"/>
 
 </databaseChangeLog>

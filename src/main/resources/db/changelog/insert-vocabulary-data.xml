@@ -1,0 +1,26 @@
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+
+    <changeSet id="addVocabularies" author="admin">
+        <insert tableName="vocabulary">
+            <column name="english_word" value="put on"/>
+        </insert>
+        <insert tableName="vocabulary">
+            <column name="english_word" value="put something on"/>
+        </insert>
+        <insert tableName="vocabulary">
+            <column name="english_word" value="put somebody on"/>
+        </insert>
+        <insert tableName="vocabulary">
+            <column name="english_word" value="put somebody on to something"/>
+        </insert>
+        <insert tableName="vocabulary">
+            <column name="english_word" value="make"/>
+        </insert>
+        <insert tableName="vocabulary">
+            <column name="english_word" value="make it"/>
+        </insert>
+    </changeSet>
+
+</databaseChangeLog>
