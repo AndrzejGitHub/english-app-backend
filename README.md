@@ -1,6 +1,6 @@
 <h2>Running the Application with Docker Compose</h2>
 
-<ol>
+<ul>
     <li><strong>Requirements:</strong> Make sure you have Docker and Docker Compose installed on your machine.</li>
     
     <li><strong>Clone Repository:</strong> Clone the repository containing your Java and Angular application.</li>
@@ -24,7 +24,7 @@
     </li>
     
     <li><strong>Stopping the Application:</strong> To stop the application and shut down the Docker containers, press <kbd>Ctrl + C</kbd> in the terminal where you started the containers.</li>
-</ol>
+</ul>
 
 <h3>Notes:</h3>
 
