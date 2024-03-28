@@ -31,10 +31,12 @@
 <h3>Docker Compose Configuration Details:</h3>
 <p>In the <code>docker-compose.yaml</code> file:</p>
 <ul>
-    <li><code>backend</code> and <code>frontend</code> services are configured to build their Docker images using the following configuration:</li>
+    <li>The <code>backend</code> service is configured to build its Docker image using the following configuration:</li>
+    <pre><code>build: ../english-app</code></pre>
+    <p>This specifies the directory containing the Dockerfile for building the backend image.</p>
+    <li>The <code>frontend</code> service is configured to build its Docker image using the following configuration:</li>
     <pre><code>build:
-  context: ../english-app-angular
-    </code></pre>
-    <p>This specifies the directory containing the Dockerfile for building the respective backend and frontend images.</p>
-    <li>Ensure that the paths specified in the <code>context</code> field match the actual directory structure of your project.</li>
+  context: ../english-app-angular</code></pre>
+    <p>This specifies the directory containing the Dockerfile for building the frontend image.</p>
+    <li>Ensure that the paths specified in the <code>build</code> and <code>context</code> fields match the actual directory structure of your project.</li>
 </ul>
