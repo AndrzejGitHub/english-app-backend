@@ -18,9 +18,7 @@
     </li>
     <li><strong>Stopping the Application:</strong> To stop the application and shut down the Docker containers, press <kbd>Ctrl + C</kbd> in the terminal where you started the containers.</li>
 </ul>
-
 <h3>Notes:</h3>
-
 <ul>
     <li>The provided <code>docker-compose.yaml</code> file defines services for the backend, MySQL database, frontend, and PHPMyAdmin.</li>
     <li>The <code>depends_on</code> directive ensures that necessary services are started in the correct order.</li>
@@ -28,7 +26,5 @@
     <li>Docker volumes are used to persist MySQL data.</li>
     <li>Networks are defined to allow communication between services.</li>
 </ul>
-
 <h3>IntelliJ IDEA Integration:</h3>
-
 <p>You can run the application directly from IntelliJ IDEA by opening the project and clicking on the Docker icon in the sidebar, then selecting <code>docker-compose.yaml</code> and clicking on the green play button to start the services.</p>
